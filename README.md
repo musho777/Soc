@@ -168,7 +168,7 @@ get_mutual_friends_count(user1_id UUID, user2_id UUID) → INTEGER
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/musho777/Soc.git
    cd social-api
    ```
 
@@ -519,9 +519,10 @@ This project is ready for CI/CD integration. Recommended pipeline:
 
 This project is licensed under the MIT License.
 
-## 👨‍💻 Author
+## 👨‍�💻 Author
 
-Created as a backend challenge demonstration
+**musho777**
+- GitHub: [@musho777](https://github.com/musho777)
 
 ## 🙏 Acknowledgments
 
