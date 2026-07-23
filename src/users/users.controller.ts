@@ -1,0 +1,109 @@
+import {
+  Controller,
+  Get,
+  Query,
+  Param,
+  HttpCode,
+  HttpStatus,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+} from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import { UsersService } from './users.service';
+import { SearchUsersDto } from './dto/search-users.dto';
+import { User } from './entities/user.entity';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+
+/**
+ * Users Controller
+ *
+ * Handles user-related endpoints
+ * All routes require JWT authentication
+ */
+@ApiTags('Users')
+@ApiBearerAuth()
+@Controller('users')
+@UseInterceptors(ClassSerializerInterceptor)
+export class UsersController {
+  constructor(private readonly usersService: UsersService) {}
+
+  /**
+   * Get current user's profile
+   */
+  @Get('me')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile retrieved successfully',
+    type: User,
+  })
+  async getMe(@CurrentUser() user: User): Promise<User> {
+    return await this.usersService.getProfile(user.id);
+  }
+
+  /**
+   * Search users with advanced filters
+   */
+  @Get('search')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Search users',
+    description: 'Advanced user search with filters for first name, last name, and age range',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Search results retrieved successfully',
+  })
+  async search(@Query() searchDto: SearchUsersDto) {
+    return await this.usersService.search(searchDto);
+  }
+
+  /**
+   * Get user by ID
+   */
+  @Get(':id')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiParam({
+    name: 'id',
+    description: 'User ID (UUID)',
+    example: '550e8400-e29b-41d4-a716-446655440000',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User found',
+    type: User,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+  })
+  async getById(@Param('id') id: string): Promise<User> {
+    return await this.usersService.getProfile(id);
+  }
+
+  /**
+   * Get user by username
+   */
+  @Get('username/:username')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get user by username' })
+  @ApiParam({
+    name: 'username',
+    description: 'Username',
+    example: 'johndoe',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User found',
+    type: User,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found',
+  })
+  async getByUsername(@Param('username') username: string): Promise<User> {
+    return await this.usersService.getByUsername(username);
+  }
+}
