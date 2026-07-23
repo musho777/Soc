@@ -9,7 +9,7 @@ import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
  * - Connection pooling for optimal database performance
  * - Transaction management
  * - Query execution with proper error handling
- * - Health checks and connection monitoring
+ * - Connection monitoring
  */
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
@@ -149,15 +149,4 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /**
-   * Get current pool statistics
-   * @returns Pool statistics
-   */
-  getPoolStats() {
-    return {
-      totalCount: this.pool.totalCount,
-      idleCount: this.pool.idleCount,
-      waitingCount: this.pool.waitingCount,
-    };
-  }
 }

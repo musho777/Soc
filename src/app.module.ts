@@ -4,7 +4,6 @@ import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { FriendsModule } from './friends/friends.module';
-import { HealthModule } from './health/health.module';
 
 /**
  * App Module - Root module of the application
@@ -12,7 +11,6 @@ import { HealthModule } from './health/health.module';
  * Architecture:
  * - ConfigModule: Environment configuration
  * - DatabaseModule: PostgreSQL connection (Global)
- * - HealthModule: Health check endpoints
  * - AuthModule: Authentication and JWT
  * - UsersModule: User management and search
  * - FriendsModule: Friend requests and relationships
@@ -27,7 +25,6 @@ import { HealthModule } from './health/health.module';
 
     // Core modules
     DatabaseModule,
-    HealthModule,
     AuthModule,
     UsersModule,
     FriendsModule,
