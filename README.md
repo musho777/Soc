@@ -73,7 +73,7 @@ Edit `.env` and update your database credentials.
 createdb social_network
 
 # Run the schema
-psql -d social_network -f src/database/schema/001_initial_schema.sql
+psql -d social_network -f src/database/schema/schema.sql
 ```
 
 4. Start the server:

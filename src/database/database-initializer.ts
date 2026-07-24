@@ -35,12 +35,7 @@ export async function initializeDatabase(config: {
 
   const pool = new Pool(config);
   try {
-    const schemaPath = path.join(
-      __dirname,
-      'database',
-      'schema',
-      '001_initial_schema.sql',
-    );
+    const schemaPath = path.join(__dirname, 'database', 'schema', 'schema.sql');
     const schema = fs.readFileSync(schemaPath, 'utf-8');
     await pool.query(schema);
   } finally {
