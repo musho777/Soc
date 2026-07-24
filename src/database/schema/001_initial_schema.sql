@@ -18,7 +18,11 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(LOWER(email));
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 
-CREATE TYPE friendship_status AS ENUM ('pending', 'accepted', 'declined', 'blocked');
+DO $$ BEGIN
+    CREATE TYPE friendship_status AS ENUM ('pending', 'accepted', 'declined', 'blocked');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 CREATE TABLE IF NOT EXISTS friend_requests (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -58,7 +62,7 @@ WHERE fr.status = 'accepted';
 CREATE TABLE IF NOT EXISTS refresh_tokens (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL,
-    token_hash VARCHAR(255) UNIQUE NOT NULL,
+    token_hash VARCHAR(64) UNIQUE NOT NULL,
     expires_at TIMESTAMP WITH TIME ZONE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     revoked_at TIMESTAMP WITH TIME ZONE,
@@ -77,12 +81,15 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+DROP TRIGGER IF EXISTS update_users_updated_at ON users;
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_friend_requests_updated_at ON friend_requests;
 CREATE TRIGGER update_friend_requests_updated_at BEFORE UPDATE ON friend_requests
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS set_friend_request_responded_at ON friend_requests;
 CREATE OR REPLACE FUNCTION set_friend_request_responded_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -93,6 +100,7 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+DROP TRIGGER IF EXISTS set_responded_at ON friend_requests;
 CREATE TRIGGER set_responded_at BEFORE UPDATE ON friend_requests
     FOR EACH ROW EXECUTE FUNCTION set_friend_request_responded_at();
 

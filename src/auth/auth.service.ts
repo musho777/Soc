@@ -12,6 +12,7 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { User } from '../users/entities/user.entity';
+import { createHash } from 'crypto';
 
 export interface JwtPayload {
   sub: string;
@@ -47,7 +48,7 @@ export class AuthService {
     );
     this.refreshExpiration = this.configService.get<string>(
       'JWT_REFRESH_EXPIRATION',
-      '30',
+      '1',
     );
   }
 
@@ -143,13 +144,14 @@ export class AuthService {
 
     const refreshToken = await this.jwtService.signAsync(payload, {
       secret: this.refreshSecret,
-      expiresIn: this.refreshExpiration + 'd',
+      expiresIn: this.refreshExpiration,
     });
+    const tokenHash = createHash('sha256').update(refreshToken).digest('hex');
 
     const expiresAt = this.calculateExpirationDate(this.refreshExpiration);
 
     await this.usersRepository.saveRefreshToken(user.id, refreshToken, expiresAt);
-    return refreshToken;
+    return tokenHash;
   }
 
   async refresh(refreshTokenDto: RefreshTokenDto): Promise<AuthResponse> {

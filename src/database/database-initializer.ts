@@ -35,7 +35,13 @@ export async function initializeDatabase(config: {
 
   const pool = new Pool(config);
   try {
-    const schemaPath = path.join(__dirname, 'schema', '001_initial_schema.sql');
+    // Webpack bundles to dist/main.js, so __dirname is dist/
+    const schemaPath = path.join(
+      __dirname,
+      'database',
+      'schema',
+      '001_initial_schema.sql',
+    );
     const schema = fs.readFileSync(schemaPath, 'utf-8');
     await pool.query(schema);
   } finally {

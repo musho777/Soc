@@ -139,7 +139,7 @@ export class FriendsRepository {
       ORDER BY fr.created_at DESC
     `;
 
-    const result = await this.db.query(query, [userId]);
+    const result = await this.db.query<PendingRequestResult>(query, [userId]);
     return result.rows;
   }
 
@@ -161,7 +161,7 @@ export class FriendsRepository {
       ORDER BY fr.created_at DESC
     `;
 
-    const result = await this.db.query(query, [userId]);
+    const result = await this.db.query<FriendRequestWithReceiver>(query, [userId]);
     return result.rows;
   }
 
@@ -196,7 +196,7 @@ export class FriendsRepository {
       LIMIT $2 OFFSET $3
     `;
 
-    const result = await this.db.query(query, [userId, limit, offset]);
+    const result = await this.db.query<FriendInfo>(query, [userId, limit, offset]);
 
     return {
       friends: result.rows,
