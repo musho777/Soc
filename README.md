@@ -4,7 +4,7 @@ A REST API for a social networking platform focusing on user management and frie
 
 ## Overview
 
-This project implements the core backend functionality you'd find in social networks - user authentication, profiles, and a friend request system. It's similar to how Facebook or LinkedIn handle connections between users.
+This project implements the core backend functionality you'd find in social networks - user authentication, profiles, and a friend request system.
 
 ## Tech Stack & Why I Chose It
 
@@ -28,121 +28,13 @@ Users Module → Profile management and user search
 Friends Module → Friend requests and connections
 ```
 
-**Key Design Decisions:**
-
-1. **Stateless Authentication** - Using JWT means no session storage needed, easier to scale horizontally.
-
-2. **Database-level constraints** - Added unique constraints and foreign keys at the DB level rather than just relying on application logic. If the app has bugs, at least the data stays consistent.
-
-3. **Bidirectional friend requests** - The `friend_requests` table tracks both directions (sender/receiver), so I can query pending requests efficiently without scanning the entire table.
-
-4. **Rate limiting** - Added throttling to prevent spam on sensitive endpoints (registration, login, friend requests).
-
-5. **Soft validation** - Email uniqueness is case-insensitive at the database level using `LOWER(email)` index. Usernames are case-sensitive though.
-
 ## Quick Start
 
 ### Prerequisites
 
 - Node.js (v20+)
 - PostgreSQL (v14+)
-- Docker (optional, but makes setup easier)
-
-### Setup
-
-1. Clone and install:
-
-```bash
-git clone https://github.com/musho777/Soc.git
-cd social-api
-npm install
-```
-
-2. Copy the environment file:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and update your database credentials.
-
-3. Setup the database:
-
-```bash
-# Create database
-createdb social_network
-
-# Run the schema
-psql -d social_network -f src/database/schema/schema.sql
-```
-
-4. Start the server:
-
-```bash
-npm run start:dev
-```
-
-The API should be running on `http://localhost:3000/api`
-
-Check out the Swagger docs at `http://localhost:3000/api/docs` to see all available endpoints.
-
-## Docker Setup (easier way)
-
-If you have Docker installed, just run:
-
-```bash
-docker-compose up -d
-```
-
-This will start:
-
-- The API on port 3000
-- PostgreSQL on port 5432
-- pgAdmin on port 5050 (useful for viewing the database)
-
-To stop everything:
-
-```bash
-docker-compose down
-```
-
-## How to Use
-
-### 1. Register a user
-
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "test@example.com",
-    "username": "testuser",
-    "password": "Password123",
-    "firstName": "Test",
-    "lastName": "User",
-    "dateOfBirth": "1995-01-01"
-  }'
-```
-
-You'll get back an access token and user info.
-
-### 2. Login
-
-```bash
-curl -X POST http://localhost:3000/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "test@example.com",
-    "password": "Password123"
-  }'
-```
-
-### 3. Use the token for protected endpoints
-
-For any authenticated endpoint, add the token to the Authorization header:
-
-```bash
-Authorization: Bearer YOUR_TOKEN_HERE
-```
+- Docker
 
 ## Main Features
 

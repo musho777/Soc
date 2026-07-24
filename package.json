@@ -1,9 +1,6 @@
 {
   "name": "social-api",
   "version": "1.0.0",
-  "description": "Advanced Social Network Backend API with NestJS, TypeScript, and PostgreSQL",
-  "author": "musho777",
-  "private": true,
   "license": "MIT",
   "scripts": {
     "build": "nest build",
