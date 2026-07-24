@@ -5,7 +5,7 @@ Complete collection of API request examples using cURL.
 ## Base URL
 
 ```
-http://localhost:3000/api/v1
+http://localhost:3000/api
 ```
 
 ## Authentication
@@ -23,7 +23,7 @@ Authorization: Bearer YOUR_JWT_TOKEN
 ### Register a New User
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/auth/register \
+curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "john.doe@example.com",
@@ -58,7 +58,7 @@ curl -X POST http://localhost:3000/api/v1/auth/register \
 ### Login
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/auth/login \
+curl -X POST http://localhost:3000/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "john.doe@example.com",
@@ -75,7 +75,7 @@ curl -X POST http://localhost:3000/api/v1/auth/login \
 ### Get Current User Profile
 
 ```bash
-curl http://localhost:3000/api/v1/users/me \
+curl http://localhost:3000/api/users/me \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -100,28 +100,28 @@ curl http://localhost:3000/api/v1/users/me \
 ### Search Users by First Name
 
 ```bash
-curl "http://localhost:3000/api/v1/users/search?first_name=John" \
+curl "http://localhost:3000/api/users/search?first_name=John" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Search Users by Last Name
 
 ```bash
-curl "http://localhost:3000/api/v1/users/search?last_name=Doe" \
+curl "http://localhost:3000/api/users/search?last_name=Doe" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Search Users by Age Range
 
 ```bash
-curl "http://localhost:3000/api/v1/users/search?age_min=25&age_max=40" \
+curl "http://localhost:3000/api/users/search?age_min=25&age_max=40" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Advanced Search (Combined Filters)
 
 ```bash
-curl "http://localhost:3000/api/v1/users/search?first_name=John&last_name=Doe&age_min=25&age_max=40&page=1&limit=20" \
+curl "http://localhost:3000/api/users/search?first_name=John&last_name=Doe&age_min=25&age_max=40&page=1&limit=20" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -156,14 +156,14 @@ curl "http://localhost:3000/api/v1/users/search?first_name=John&last_name=Doe&ag
 ### Get User by ID
 
 ```bash
-curl http://localhost:3000/api/v1/users/550e8400-e29b-41d4-a716-446655440000 \
+curl http://localhost:3000/api/users/550e8400-e29b-41d4-a716-446655440000 \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Get User by Username
 
 ```bash
-curl http://localhost:3000/api/v1/users/username/johndoe \
+curl http://localhost:3000/api/users/username/johndoe \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -174,7 +174,7 @@ curl http://localhost:3000/api/v1/users/username/johndoe \
 ### Send Friend Request
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/friends/requests \
+curl -X POST http://localhost:3000/api/friends/requests \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -199,7 +199,7 @@ curl -X POST http://localhost:3000/api/v1/friends/requests \
 ### Get Pending Friend Requests (Received)
 
 ```bash
-curl http://localhost:3000/api/v1/friends/requests/pending \
+curl http://localhost:3000/api/friends/requests/pending \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -229,7 +229,7 @@ curl http://localhost:3000/api/v1/friends/requests/pending \
 ### Get Sent Friend Requests
 
 ```bash
-curl http://localhost:3000/api/v1/friends/requests/sent \
+curl http://localhost:3000/api/friends/requests/sent \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -259,7 +259,7 @@ curl http://localhost:3000/api/v1/friends/requests/sent \
 ### Accept Friend Request
 
 ```bash
-curl -X PATCH http://localhost:3000/api/v1/friends/requests/770e8400-e29b-41d4-a716-446655440002/accept \
+curl -X PATCH http://localhost:3000/api/friends/requests/770e8400-e29b-41d4-a716-446655440002/accept \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -282,7 +282,7 @@ curl -X PATCH http://localhost:3000/api/v1/friends/requests/770e8400-e29b-41d4-a
 ### Decline Friend Request
 
 ```bash
-curl -X PATCH http://localhost:3000/api/v1/friends/requests/770e8400-e29b-41d4-a716-446655440002/decline \
+curl -X PATCH http://localhost:3000/api/friends/requests/770e8400-e29b-41d4-a716-446655440002/decline \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -302,7 +302,7 @@ curl -X PATCH http://localhost:3000/api/v1/friends/requests/770e8400-e29b-41d4-a
 ### Cancel Sent Friend Request
 
 ```bash
-curl -X DELETE http://localhost:3000/api/v1/friends/requests/770e8400-e29b-41d4-a716-446655440002 \
+curl -X DELETE http://localhost:3000/api/friends/requests/770e8400-e29b-41d4-a716-446655440002 \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -320,14 +320,14 @@ curl -X DELETE http://localhost:3000/api/v1/friends/requests/770e8400-e29b-41d4-
 ### Get Friends List
 
 ```bash
-curl http://localhost:3000/api/v1/friends \
+curl http://localhost:3000/api/friends \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Get Friends List with Pagination
 
 ```bash
-curl "http://localhost:3000/api/v1/friends?page=1&limit=10" \
+curl "http://localhost:3000/api/friends?page=1&limit=10" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -359,7 +359,7 @@ curl "http://localhost:3000/api/v1/friends?page=1&limit=10" \
 ### Remove Friend (Unfriend)
 
 ```bash
-curl -X DELETE http://localhost:3000/api/v1/friends/660e8400-e29b-41d4-a716-446655440001 \
+curl -X DELETE http://localhost:3000/api/friends/660e8400-e29b-41d4-a716-446655440001 \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -373,7 +373,7 @@ curl -X DELETE http://localhost:3000/api/v1/friends/660e8400-e29b-41d4-a716-4466
 ### Get Friendship Status with User
 
 ```bash
-curl http://localhost:3000/api/v1/friends/status/660e8400-e29b-41d4-a716-446655440001 \
+curl http://localhost:3000/api/friends/status/660e8400-e29b-41d4-a716-446655440001 \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
@@ -403,7 +403,7 @@ curl http://localhost:3000/api/v1/friends/status/660e8400-e29b-41d4-a716-4466554
 ### Check API Health
 
 ```bash
-curl http://localhost:3000/api/v1/health
+curl http://localhost:3000/api/health
 ```
 
 **Response:**
@@ -436,7 +436,7 @@ curl http://localhost:3000/api/v1/health
 
 ```bash
 # 1. Register User A (Alice)
-curl -X POST http://localhost:3000/api/v1/auth/register \
+curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "alice@example.com",
@@ -449,7 +449,7 @@ curl -X POST http://localhost:3000/api/v1/auth/register \
 # Save ALICE_TOKEN
 
 # 2. Register User B (Bob)
-curl -X POST http://localhost:3000/api/v1/auth/register \
+curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "bob@example.com",
@@ -462,30 +462,30 @@ curl -X POST http://localhost:3000/api/v1/auth/register \
 # Save BOB_TOKEN and BOB_ID
 
 # 3. Alice searches for Bob
-curl "http://localhost:3000/api/v1/users/search?first_name=Bob" \
+curl "http://localhost:3000/api/users/search?first_name=Bob" \
   -H "Authorization: Bearer ALICE_TOKEN"
 
 # 4. Alice sends friend request to Bob
-curl -X POST http://localhost:3000/api/v1/friends/requests \
+curl -X POST http://localhost:3000/api/friends/requests \
   -H "Authorization: Bearer ALICE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"receiver_id": "BOB_ID"}'
 
 # 5. Bob views pending requests
-curl http://localhost:3000/api/v1/friends/requests/pending \
+curl http://localhost:3000/api/friends/requests/pending \
   -H "Authorization: Bearer BOB_TOKEN"
 # Note REQUEST_ID
 
 # 6. Bob accepts the request
-curl -X PATCH http://localhost:3000/api/v1/friends/requests/REQUEST_ID/accept \
+curl -X PATCH http://localhost:3000/api/friends/requests/REQUEST_ID/accept \
   -H "Authorization: Bearer BOB_TOKEN"
 
 # 7. Alice views her friends
-curl http://localhost:3000/api/v1/friends \
+curl http://localhost:3000/api/friends \
   -H "Authorization: Bearer ALICE_TOKEN"
 
 # 8. Check friendship status
-curl http://localhost:3000/api/v1/friends/status/BOB_ID \
+curl http://localhost:3000/api/friends/status/BOB_ID \
   -H "Authorization: Bearer ALICE_TOKEN"
 ```
 
@@ -499,7 +499,7 @@ curl http://localhost:3000/api/v1/friends/status/BOB_ID \
 {
   "statusCode": 400,
   "timestamp": "2024-01-15T12:00:00.000Z",
-  "path": "/api/v1/auth/register",
+  "path": "/api/auth/register",
   "method": "POST",
   "message": [
     "email must be an email",
@@ -515,7 +515,7 @@ curl http://localhost:3000/api/v1/friends/status/BOB_ID \
 {
   "statusCode": 401,
   "timestamp": "2024-01-15T12:00:00.000Z",
-  "path": "/api/v1/users/me",
+  "path": "/api/users/me",
   "method": "GET",
   "message": "Unauthorized",
   "error": "Unauthorized"
@@ -528,7 +528,7 @@ curl http://localhost:3000/api/v1/friends/status/BOB_ID \
 {
   "statusCode": 404,
   "timestamp": "2024-01-15T12:00:00.000Z",
-  "path": "/api/v1/users/123",
+  "path": "/api/users/123",
   "method": "GET",
   "message": "User not found",
   "error": "Not Found"
@@ -541,7 +541,7 @@ curl http://localhost:3000/api/v1/friends/status/BOB_ID \
 {
   "statusCode": 409,
   "timestamp": "2024-01-15T12:00:00.000Z",
-  "path": "/api/v1/auth/register",
+  "path": "/api/auth/register",
   "method": "POST",
   "message": "Email already registered",
   "error": "Conflict"

@@ -198,7 +198,7 @@ get_mutual_friends_count(user1_id UUID, user2_id UUID) → INTEGER
    ```
 
 6. **Access the application**
-   - API: http://localhost:3000/api/v1
+   - API: http://localhost:3000/api
    - Swagger Docs: http://localhost:3000/api/docs
 
 ## 📚 API Documentation
@@ -217,12 +217,12 @@ Features:
 
 1. **Register** a new user:
    ```
-   POST /api/v1/auth/register
+   POST /api/auth/register
    ```
 
 2. **Login** to get JWT token:
    ```
-   POST /api/v1/auth/login
+   POST /api/auth/login
    ```
 
 3. **Use token** for protected endpoints:
@@ -238,7 +238,7 @@ Create a `.env` file in the root directory:
 # Application
 NODE_ENV=development
 PORT=3000
-API_PREFIX=api/v1
+API_PREFIX=api
 
 # Database
 DB_HOST=localhost
@@ -304,37 +304,37 @@ docker run -p 3000:3000 \
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| POST | `/api/v1/auth/register` | Register new user | No |
-| POST | `/api/v1/auth/login` | Login user | No |
+| POST | `/api/auth/register` | Register new user | No |
+| POST | `/api/auth/login` | Login user | No |
 
 ### Users
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| GET | `/api/v1/users/me` | Get current user profile | Yes |
-| GET | `/api/v1/users/search` | Search users | Yes |
-| GET | `/api/v1/users/:id` | Get user by ID | Yes |
-| GET | `/api/v1/users/username/:username` | Get user by username | Yes |
+| GET | `/api/users/me` | Get current user profile | Yes |
+| GET | `/api/users/search` | Search users | Yes |
+| GET | `/api/users/:id` | Get user by ID | Yes |
+| GET | `/api/users/username/:username` | Get user by username | Yes |
 
 ### Friends
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| POST | `/api/v1/friends/requests` | Send friend request | Yes |
-| GET | `/api/v1/friends/requests/pending` | Get pending requests | Yes |
-| GET | `/api/v1/friends/requests/sent` | Get sent requests | Yes |
-| PATCH | `/api/v1/friends/requests/:id/accept` | Accept friend request | Yes |
-| PATCH | `/api/v1/friends/requests/:id/decline` | Decline friend request | Yes |
-| DELETE | `/api/v1/friends/requests/:id` | Cancel friend request | Yes |
-| GET | `/api/v1/friends` | Get friends list | Yes |
-| DELETE | `/api/v1/friends/:friendId` | Unfriend user | Yes |
-| GET | `/api/v1/friends/status/:userId` | Get friendship status | Yes |
+| POST | `/api/friends/requests` | Send friend request | Yes |
+| GET | `/api/friends/requests/pending` | Get pending requests | Yes |
+| GET | `/api/friends/requests/sent` | Get sent requests | Yes |
+| PATCH | `/api/friends/requests/:id/accept` | Accept friend request | Yes |
+| PATCH | `/api/friends/requests/:id/decline` | Decline friend request | Yes |
+| DELETE | `/api/friends/requests/:id` | Cancel friend request | Yes |
+| GET | `/api/friends` | Get friends list | Yes |
+| DELETE | `/api/friends/:friendId` | Unfriend user | Yes |
+| GET | `/api/friends/status/:userId` | Get friendship status | Yes |
 
 ### Health
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| GET | `/api/v1/health` | Health check | No |
+| GET | `/api/health` | Health check | No |
 
 ## 🧪 Testing
 
@@ -355,7 +355,7 @@ npm run test:cov
 
 **Register a user:**
 ```bash
-curl -X POST http://localhost:3000/api/v1/auth/register \
+curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "john@example.com",
@@ -370,13 +370,13 @@ curl -X POST http://localhost:3000/api/v1/auth/register \
 
 **Search users:**
 ```bash
-curl -X GET "http://localhost:3000/api/v1/users/search?first_name=John&age_min=25&age_max=40" \
+curl -X GET "http://localhost:3000/api/users/search?first_name=John&age_min=25&age_max=40" \
   -H "Authorization: Bearer <your-jwt-token>"
 ```
 
 **Send friend request:**
 ```bash
-curl -X POST http://localhost:3000/api/v1/friends/requests \
+curl -X POST http://localhost:3000/api/friends/requests \
   -H "Authorization: Bearer <your-jwt-token>" \
   -H "Content-Type: application/json" \
   -d '{

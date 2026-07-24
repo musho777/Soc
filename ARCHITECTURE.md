@@ -243,7 +243,7 @@ WHERE is_active = true;
 
 ```
 1. HTTP Request
-   GET /api/v1/users/search?first_name=John&age_min=25&limit=20
+   GET /api/users/search?first_name=John&age_min=25&limit=20
    Authorization: Bearer <jwt-token>
 
 2. NestJS Middleware
@@ -395,7 +395,7 @@ Return formatted JSON to client
 {
   "statusCode": 400,
   "timestamp": "2024-01-15T10:30:00.000Z",
-  "path": "/api/v1/users/search",
+  "path": "/api/users/search",
   "method": "GET",
   "message": "Validation failed",
   "error": "Bad Request"

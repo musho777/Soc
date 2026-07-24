@@ -4,11 +4,6 @@ import { FriendsController } from './friends.controller';
 import { FriendsRepository } from './friends.repository';
 import { UsersRepository } from '../users/users.repository';
 
-/**
- * Friends Module
- *
- * Handles friend request and friendship management
- */
 @Module({
   controllers: [FriendsController],
   providers: [FriendsService, FriendsRepository, UsersRepository],

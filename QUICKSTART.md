@@ -28,7 +28,7 @@ This is the fastest way to get started. Everything is configured for you.
    ```
 
 4. **Access the application**
-   - API: http://localhost:3000/api/v1
+   - API: http://localhost:3000/api
    - API Docs: http://localhost:3000/api/docs
    - pgAdmin: http://localhost:5050
 
@@ -70,7 +70,7 @@ That's it! The database schema is automatically applied.
    ```
 
 6. **Access the application**
-   - API: http://localhost:3000/api/v1
+   - API: http://localhost:3000/api
    - API Docs: http://localhost:3000/api/docs
 
 ## Testing the API
@@ -88,7 +88,7 @@ That's it! The database schema is automatically applied.
 
 **Register a user:**
 ```bash
-curl -X POST http://localhost:3000/api/v1/auth/register \
+curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "alice@example.com",
@@ -104,13 +104,13 @@ Save the `access_token` from the response.
 
 **Get your profile:**
 ```bash
-curl http://localhost:3000/api/v1/users/me \
+curl http://localhost:3000/api/users/me \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
 **Search users:**
 ```bash
-curl "http://localhost:3000/api/v1/users/search?first_name=Alice" \
+curl "http://localhost:3000/api/users/search?first_name=Alice" \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
@@ -195,7 +195,7 @@ Let's create two users and make them friends:
 ### 1. Register User A (Alice)
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/auth/register \
+curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "alice@example.com",
@@ -212,7 +212,7 @@ Save Alice's token: `ALICE_TOKEN`
 ### 2. Register User B (Bob)
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/auth/register \
+curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "bob@example.com",
@@ -229,14 +229,14 @@ Save Bob's token: `BOB_TOKEN` and user ID: `BOB_ID`
 ### 3. Alice searches for Bob
 
 ```bash
-curl "http://localhost:3000/api/v1/users/search?first_name=Bob" \
+curl "http://localhost:3000/api/users/search?first_name=Bob" \
   -H "Authorization: Bearer ALICE_TOKEN"
 ```
 
 ### 4. Alice sends friend request to Bob
 
 ```bash
-curl -X POST http://localhost:3000/api/v1/friends/requests \
+curl -X POST http://localhost:3000/api/friends/requests \
   -H "Authorization: Bearer ALICE_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -247,7 +247,7 @@ curl -X POST http://localhost:3000/api/v1/friends/requests \
 ### 5. Bob views pending requests
 
 ```bash
-curl http://localhost:3000/api/v1/friends/requests/pending \
+curl http://localhost:3000/api/friends/requests/pending \
   -H "Authorization: Bearer BOB_TOKEN"
 ```
 
@@ -256,14 +256,14 @@ Save the request ID: `REQUEST_ID`
 ### 6. Bob accepts the request
 
 ```bash
-curl -X PATCH http://localhost:3000/api/v1/friends/requests/REQUEST_ID/accept \
+curl -X PATCH http://localhost:3000/api/friends/requests/REQUEST_ID/accept \
   -H "Authorization: Bearer BOB_TOKEN"
 ```
 
 ### 7. Alice views her friends list
 
 ```bash
-curl http://localhost:3000/api/v1/friends \
+curl http://localhost:3000/api/friends \
   -H "Authorization: Bearer ALICE_TOKEN"
 ```
 
@@ -294,7 +294,7 @@ docker-compose restart postgres
 
 ### Can't access Swagger
 
-- Make sure API is running: http://localhost:3000/api/v1/health
+- Make sure API is running: http://localhost:3000/api/health
 - Check the correct URL: http://localhost:3000/api/docs
 
 ### JWT token expired
@@ -331,7 +331,7 @@ If you encounter issues:
 
 1. Check the logs: `docker-compose logs -f api`
 2. Verify environment variables: `cat .env`
-3. Check database connection: http://localhost:3000/api/v1/health
+3. Check database connection: http://localhost:3000/api/health
 4. Review the [README](README.md) and [ARCHITECTURE](ARCHITECTURE.md) docs
 
 Happy coding! 🚀

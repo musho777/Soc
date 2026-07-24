@@ -2,9 +2,6 @@ import { IsOptional, IsString, IsInt, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
-/**
- * DTO for advanced user search
- */
 export class SearchUsersDto {
   @ApiPropertyOptional({
     example: 'John',

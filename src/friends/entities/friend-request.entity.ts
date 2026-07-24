@@ -1,18 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-/**
- * Friend Request Status Enum
- */
 export enum FriendshipStatus {
   PENDING = 'pending',
   ACCEPTED = 'accepted',
   DECLINED = 'declined',
   BLOCKED = 'blocked',
 }
-
-/**
- * Friend Request Entity
- */
 export class FriendRequest {
   @ApiProperty({
     example: '550e8400-e29b-41d4-a716-446655440000',

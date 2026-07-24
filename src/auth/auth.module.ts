@@ -9,12 +9,6 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { UsersRepository } from '../users/users.repository';
 
-/**
- * Authentication Module
- *
- * Provides authentication services and JWT configuration
- * Registers JWT guard globally for all routes
- */
 @Module({
   imports: [
     PassportModule,

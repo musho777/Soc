@@ -6,20 +6,10 @@ import { LoginDto } from '../users/dto/login.dto';
 import { RefreshTokenDto } from '../users/dto/refresh-token.dto';
 import { Public } from './decorators/public.decorator';
 
-/**
- * Authentication Controller
- *
- * Handles user registration and login endpoints
- * These routes are public (no JWT required)
- */
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  /**
-   * Register a new user account
-   */
   @Public()
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
@@ -40,9 +30,6 @@ export class AuthController {
     return await this.authService.register(createUserDto);
   }
 
-  /**
-   * Login with existing credentials
-   */
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
@@ -59,9 +46,6 @@ export class AuthController {
     return await this.authService.login(loginDto);
   }
 
-  /**
-   * Refresh access token using refresh token
-   */
   @Public()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
@@ -78,9 +62,6 @@ export class AuthController {
     return await this.authService.refresh(refreshTokenDto);
   }
 
-  /**
-   * Logout by revoking refresh token
-   */
   @Public()
   @Post('logout')
   @HttpCode(HttpStatus.OK)

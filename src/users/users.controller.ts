@@ -8,18 +8,18 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+} from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { SearchUsersDto } from './dto/search-users.dto';
 import { User } from './entities/user.entity';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
-/**
- * Users Controller
- *
- * Handles user-related endpoints
- * All routes require JWT authentication
- */
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('users')
@@ -27,9 +27,6 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  /**
-   * Get current user's profile
-   */
   @Get('me')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get current user profile' })
@@ -42,14 +39,12 @@ export class UsersController {
     return await this.usersService.getProfile(user.id);
   }
 
-  /**
-   * Search users with advanced filters
-   */
   @Get('search')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Search users',
-    description: 'Advanced user search with filters for first name, last name, and age range',
+    description:
+      'Advanced user search with filters for first name, last name, and age range',
   })
   @ApiResponse({
     status: 200,
@@ -59,9 +54,6 @@ export class UsersController {
     return await this.usersService.search(searchDto);
   }
 
-  /**
-   * Get user by ID
-   */
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get user by ID' })
@@ -83,9 +75,6 @@ export class UsersController {
     return await this.usersService.getProfile(id);
   }
 
-  /**
-   * Get user by username
-   */
   @Get('username/:username')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get user by username' })

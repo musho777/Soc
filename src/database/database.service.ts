@@ -2,15 +2,6 @@ import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/commo
 import { ConfigService } from '@nestjs/config';
 import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
 
-/**
- * Database Service - Manages PostgreSQL connection pool and query execution
- *
- * This service provides:
- * - Connection pooling for optimal database performance
- * - Transaction management
- * - Query execution with proper error handling
- * - Connection monitoring
- */
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(DatabaseService.name);
@@ -19,10 +10,6 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   constructor(private configService: ConfigService) {
     this.initializePool();
   }
-
-  /**
-   * Initialize PostgreSQL connection pool with configuration
-   */
   private initializePool(): void {
     this.pool = new Pool({
       host: this.configService.get<string>('DB_HOST', 'localhost'),
@@ -36,25 +23,19 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       connectionTimeoutMillis: 10000,
     });
 
-    // Log pool errors
     this.pool.on('error', (err) => {
       this.logger.error('Unexpected error on idle client', err);
     });
 
-    // Log pool connection
     this.pool.on('connect', () => {
       this.logger.log('New client connected to database pool');
     });
 
-    // Log pool removal
     this.pool.on('remove', () => {
       this.logger.log('Client removed from database pool');
     });
   }
 
-  /**
-   * Module initialization - verify database connection
-   */
   async onModuleInit(): Promise<void> {
     try {
       await this.healthCheck();
@@ -65,9 +46,6 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /**
-   * Module cleanup - close all database connections
-   */
   async onModuleDestroy(): Promise<void> {
     try {
       await this.pool.end();
@@ -77,13 +55,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /**
-   * Execute a query with parameters
-   * @param query SQL query string
-   * @param params Query parameters
-   * @returns Query result
-   */
-  async query<T extends QueryResultRow = any>(query: string, params?: any[]): Promise<QueryResult<T>> {
+  async query<T extends QueryResultRow = any>(
+    query: string,
+    params?: any[],
+  ): Promise<QueryResult<T>> {
     const start = Date.now();
     try {
       const result = await this.pool.query<T>(query, params);
@@ -98,22 +73,11 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /**
-   * Get a client from the pool for transaction management
-   * @returns Pool client
-   */
   async getClient(): Promise<PoolClient> {
     return await this.pool.connect();
   }
 
-  /**
-   * Execute multiple queries in a transaction
-   * @param callback Transaction callback function
-   * @returns Transaction result
-   */
-  async transaction<T>(
-    callback: (client: PoolClient) => Promise<T>,
-  ): Promise<T> {
+  async transaction<T>(callback: (client: PoolClient) => Promise<T>): Promise<T> {
     const client = await this.getClient();
 
     try {
@@ -135,10 +99,6 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  /**
-   * Health check to verify database connectivity
-   * @returns True if connection is healthy
-   */
   async healthCheck(): Promise<boolean> {
     try {
       const result = await this.query('SELECT NOW()');
@@ -148,5 +108,4 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       return false;
     }
   }
-
 }

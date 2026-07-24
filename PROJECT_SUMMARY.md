@@ -10,8 +10,8 @@ A **production-ready** backend API for a social networking platform built from s
 
 | Requirement | Status | Implementation |
 |------------|--------|----------------|
-| User Registration | ✅ Complete | `/api/v1/auth/register` with validation |
-| User Login | ✅ Complete | `/api/v1/auth/login` with JWT |
+| User Registration | ✅ Complete | `/api/auth/register` with validation |
+| User Login | ✅ Complete | `/api/auth/login` with JWT |
 | Advanced User Search | ✅ Complete | Search by first name, last name, age (combinations) |
 | Friend Requests | ✅ Complete | Send, view, accept, decline |
 | No ORM Usage | ✅ Complete | Raw SQL with node-postgres (pg) |

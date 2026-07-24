@@ -23,21 +23,12 @@ import { SendFriendRequestDto } from './dto/send-friend-request.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { User } from '../users/entities/user.entity';
 
-/**
- * Friends Controller
- *
- * Handles friend-related endpoints
- * All routes require JWT authentication
- */
 @ApiTags('Friends')
 @ApiBearerAuth()
 @Controller('friends')
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
 
-  /**
-   * Send a friend request
-   */
   @Post('requests')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Send a friend request' })
@@ -57,16 +48,10 @@ export class FriendsController {
     status: 409,
     description: 'Already friends or request already exists',
   })
-  async sendRequest(
-    @CurrentUser() user: User,
-    @Body() dto: SendFriendRequestDto,
-  ) {
+  async sendRequest(@CurrentUser() user: User, @Body() dto: SendFriendRequestDto) {
     return await this.friendsService.sendRequest(user.id, dto.receiver_id);
   }
 
-  /**
-   * Get pending friend requests (received)
-   */
   @Get('requests/pending')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get pending friend requests received' })
@@ -78,9 +63,6 @@ export class FriendsController {
     return await this.friendsService.getPendingRequests(user.id);
   }
 
-  /**
-   * Get sent friend requests
-   */
   @Get('requests/sent')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get sent friend requests' })
@@ -92,9 +74,6 @@ export class FriendsController {
     return await this.friendsService.getSentRequests(user.id);
   }
 
-  /**
-   * Accept a friend request
-   */
   @Patch('requests/:id/accept')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Accept a friend request' })
@@ -114,9 +93,6 @@ export class FriendsController {
     return await this.friendsService.acceptRequest(id, user.id);
   }
 
-  /**
-   * Decline a friend request
-   */
   @Patch('requests/:id/decline')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Decline a friend request' })
@@ -136,9 +112,6 @@ export class FriendsController {
     return await this.friendsService.declineRequest(id, user.id);
   }
 
-  /**
-   * Cancel a sent friend request
-   */
   @Delete('requests/:id')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Cancel a sent friend request' })
@@ -158,9 +131,6 @@ export class FriendsController {
     return await this.friendsService.cancelRequest(id, user.id);
   }
 
-  /**
-   * Get list of friends
-   */
   @Get()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get list of friends' })
@@ -188,9 +158,6 @@ export class FriendsController {
     return await this.friendsService.getFriends(user.id, Number(page), Number(limit));
   }
 
-  /**
-   * Remove a friend (unfriend)
-   */
   @Delete(':friendId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Remove a friend (unfriend)' })
@@ -210,9 +177,6 @@ export class FriendsController {
     return await this.friendsService.unfriend(user.id, friendId);
   }
 
-  /**
-   * Get friendship status with a user
-   */
   @Get('status/:userId')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get friendship status with a user' })
@@ -224,10 +188,7 @@ export class FriendsController {
     status: 200,
     description: 'Friendship status retrieved',
   })
-  async getFriendshipStatus(
-    @CurrentUser() user: User,
-    @Param('userId') userId: string,
-  ) {
+  async getFriendshipStatus(@CurrentUser() user: User, @Param('userId') userId: string) {
     return await this.friendsService.getFriendshipStatus(user.id, userId);
   }
 }

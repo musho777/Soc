@@ -9,9 +9,6 @@ import { FriendsRepository } from './friends.repository';
 import { UsersRepository } from '../users/users.repository';
 import { FriendshipStatus } from './entities/friend-request.entity';
 
-/**
- * Friends Service - Business logic for friend operations
- */
 @Injectable()
 export class FriendsService {
   private readonly logger = new Logger(FriendsService.name);
@@ -21,25 +18,16 @@ export class FriendsService {
     private readonly usersRepository: UsersRepository,
   ) {}
 
-  /**
-   * Send a friend request
-   * @param senderId Sender user ID
-   * @param receiverId Receiver user ID
-   * @returns Created friend request
-   */
   async sendRequest(senderId: string, receiverId: string) {
-    // Cannot send request to yourself
     if (senderId === receiverId) {
       throw new BadRequestException('Cannot send friend request to yourself');
     }
 
-    // Check if receiver exists
     const receiver = await this.usersRepository.findById(receiverId);
     if (!receiver) {
       throw new NotFoundException('User not found');
     }
 
-    // Check for existing relationship
     const existingRelationship = await this.friendsRepository.findExistingRelationship(
       senderId,
       receiverId,
@@ -51,7 +39,6 @@ export class FriendsService {
       }
 
       if (existingRelationship.status === FriendshipStatus.PENDING) {
-        // If there's an incoming request, accept it instead
         if (existingRelationship.sender_id === receiverId) {
           throw new ConflictException(
             'This user has already sent you a friend request. Accept it instead.',
@@ -75,19 +62,11 @@ export class FriendsService {
     };
   }
 
-  /**
-   * Accept a friend request
-   * @param requestId Request ID
-   * @param userId Current user ID (receiver)
-   * @returns Updated request
-   */
   async acceptRequest(requestId: string, userId: string) {
     const request = await this.friendsRepository.acceptRequest(requestId, userId);
 
     if (!request) {
-      throw new NotFoundException(
-        'Friend request not found or already responded to',
-      );
+      throw new NotFoundException('Friend request not found or already responded to');
     }
 
     this.logger.log(`Friend request ${requestId} accepted by ${userId}`);
@@ -98,19 +77,11 @@ export class FriendsService {
     };
   }
 
-  /**
-   * Decline a friend request
-   * @param requestId Request ID
-   * @param userId Current user ID (receiver)
-   * @returns Updated request
-   */
   async declineRequest(requestId: string, userId: string) {
     const request = await this.friendsRepository.declineRequest(requestId, userId);
 
     if (!request) {
-      throw new NotFoundException(
-        'Friend request not found or already responded to',
-      );
+      throw new NotFoundException('Friend request not found or already responded to');
     }
 
     this.logger.log(`Friend request ${requestId} declined by ${userId}`);
@@ -121,11 +92,6 @@ export class FriendsService {
     };
   }
 
-  /**
-   * Get pending friend requests
-   * @param userId User ID
-   * @returns List of pending requests
-   */
   async getPendingRequests(userId: string) {
     const requests = await this.friendsRepository.getPendingRequests(userId);
 
@@ -135,11 +101,6 @@ export class FriendsService {
     };
   }
 
-  /**
-   * Get sent friend requests
-   * @param userId User ID
-   * @returns List of sent requests
-   */
   async getSentRequests(userId: string) {
     const requests = await this.friendsRepository.getSentRequests(userId);
 
@@ -148,14 +109,6 @@ export class FriendsService {
       count: requests.length,
     };
   }
-
-  /**
-   * Get list of friends
-   * @param userId User ID
-   * @param page Page number
-   * @param limit Results per page
-   * @returns Paginated friends list
-   */
   async getFriends(userId: string, page: number = 1, limit: number = 20) {
     const { friends, total } = await this.friendsRepository.getFriends(
       userId,
@@ -178,12 +131,6 @@ export class FriendsService {
     };
   }
 
-  /**
-   * Cancel a sent friend request
-   * @param requestId Request ID
-   * @param userId User ID (sender)
-   * @returns Success message
-   */
   async cancelRequest(requestId: string, userId: string) {
     const success = await this.friendsRepository.cancelRequest(requestId, userId);
 
@@ -198,12 +145,6 @@ export class FriendsService {
     };
   }
 
-  /**
-   * Remove a friend (unfriend)
-   * @param userId User ID
-   * @param friendId Friend ID
-   * @returns Success message
-   */
   async unfriend(userId: string, friendId: string) {
     if (userId === friendId) {
       throw new BadRequestException('Invalid operation');
@@ -222,12 +163,6 @@ export class FriendsService {
     };
   }
 
-  /**
-   * Check friendship status with another user
-   * @param userId Current user ID
-   * @param otherUserId Other user ID
-   * @returns Friendship status
-   */
   async getFriendshipStatus(userId: string, otherUserId: string) {
     const relationship = await this.friendsRepository.findExistingRelationship(
       userId,

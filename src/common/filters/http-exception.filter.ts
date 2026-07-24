@@ -3,16 +3,10 @@ import {
   Catch,
   ArgumentsHost,
   HttpException,
-  HttpStatus,
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
-/**
- * Global HTTP Exception Filter
- *
- * Catches all HTTP exceptions and formats them consistently
- */
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);
@@ -39,7 +33,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
           : undefined,
     };
 
-    // Log error for debugging
     if (status >= 500) {
       this.logger.error(
         `${request.method} ${request.url}`,

@@ -1,12 +1,6 @@
 import { Exclude } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-/**
- * User Entity - Represents a user in the system
- *
- * This entity excludes the password_hash from serialization
- * for security purposes using class-transformer
- */
 export class User {
   @ApiProperty({
     example: '550e8400-e29b-41d4-a716-446655440000',

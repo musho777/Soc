@@ -1,16 +1,6 @@
--- ============================================================================
--- Social Network Database Schema
--- Version: 1.0.0
--- Description: Initial database schema for social network platform
--- ============================================================================
-
--- Create extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "citext";
 
--- ============================================================================
--- USERS TABLE
--- ============================================================================
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     email CITEXT UNIQUE NOT NULL,
@@ -27,13 +17,11 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     last_login_at TIMESTAMP WITH TIME ZONE,
 
-    -- Constraints
     CONSTRAINT email_format CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
     CONSTRAINT username_format CHECK (username ~* '^[a-zA-Z0-9_]{3,50}$'),
     CONSTRAINT valid_birth_date CHECK (date_of_birth < CURRENT_DATE AND date_of_birth > '1900-01-01')
 );
 
--- Create indexes for users table
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_username ON users(username);
 CREATE INDEX idx_users_first_name ON users(first_name);
@@ -42,12 +30,8 @@ CREATE INDEX idx_users_date_of_birth ON users(date_of_birth);
 CREATE INDEX idx_users_created_at ON users(created_at DESC);
 CREATE INDEX idx_users_is_active ON users(is_active) WHERE is_active = true;
 
--- Composite index for search optimization
 CREATE INDEX idx_users_search ON users(first_name, last_name, date_of_birth) WHERE is_active = true;
 
--- ============================================================================
--- FRIEND REQUESTS TABLE
--- ============================================================================
 CREATE TYPE friendship_status AS ENUM ('pending', 'accepted', 'declined', 'blocked');
 
 CREATE TABLE IF NOT EXISTS friend_requests (
@@ -59,27 +43,19 @@ CREATE TABLE IF NOT EXISTS friend_requests (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     responded_at TIMESTAMP WITH TIME ZONE,
 
-    -- Foreign keys
     CONSTRAINT fk_sender FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_receiver FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE,
 
-    -- Constraints
     CONSTRAINT different_users CHECK (sender_id != receiver_id),
     CONSTRAINT unique_friendship UNIQUE (sender_id, receiver_id)
 );
 
--- Create indexes for friend_requests table
 CREATE INDEX idx_friend_requests_sender ON friend_requests(sender_id, status);
 CREATE INDEX idx_friend_requests_receiver ON friend_requests(receiver_id, status);
 CREATE INDEX idx_friend_requests_status ON friend_requests(status);
 CREATE INDEX idx_friend_requests_created_at ON friend_requests(created_at DESC);
 
--- Composite index for finding friendships
 CREATE INDEX idx_friend_requests_bidirectional ON friend_requests(sender_id, receiver_id, status);
-
--- ============================================================================
--- FRIENDSHIPS VIEW (For easier querying of accepted friendships)
--- ============================================================================
 CREATE OR REPLACE VIEW friendships AS
 SELECT
     fr.id,
@@ -97,9 +73,6 @@ SELECT
 FROM friend_requests fr
 WHERE fr.status = 'accepted';
 
--- ============================================================================
--- REFRESH_TOKENS TABLE (For JWT refresh token strategy)
--- ============================================================================
 CREATE TABLE IF NOT EXISTS refresh_tokens (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID NOT NULL,
@@ -108,18 +81,13 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     revoked_at TIMESTAMP WITH TIME ZONE,
 
-    -- Foreign keys
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Create indexes for refresh_tokens table
 CREATE INDEX idx_refresh_tokens_user ON refresh_tokens(user_id);
 CREATE INDEX idx_refresh_tokens_expires ON refresh_tokens(expires_at);
 CREATE INDEX idx_refresh_tokens_token_hash ON refresh_tokens(token_hash) WHERE revoked_at IS NULL;
 
--- ============================================================================
--- AUDIT LOG TABLE (For tracking important actions)
--- ============================================================================
 CREATE TABLE IF NOT EXISTS audit_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID,
@@ -131,21 +99,14 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     user_agent TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    -- Foreign keys
     CONSTRAINT fk_audit_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
--- Create indexes for audit_logs table
 CREATE INDEX idx_audit_logs_user ON audit_logs(user_id, created_at DESC);
 CREATE INDEX idx_audit_logs_action ON audit_logs(action);
 CREATE INDEX idx_audit_logs_entity ON audit_logs(entity_type, entity_id);
 CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at DESC);
 
--- ============================================================================
--- TRIGGERS
--- ============================================================================
-
--- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -154,15 +115,12 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Trigger for users table
 CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Trigger for friend_requests table
 CREATE TRIGGER update_friend_requests_updated_at BEFORE UPDATE ON friend_requests
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Function to set responded_at when status changes
 CREATE OR REPLACE FUNCTION set_friend_request_responded_at()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -173,15 +131,9 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- Trigger for setting responded_at
 CREATE TRIGGER set_responded_at BEFORE UPDATE ON friend_requests
     FOR EACH ROW EXECUTE FUNCTION set_friend_request_responded_at();
 
--- ============================================================================
--- FUNCTIONS
--- ============================================================================
-
--- Function to calculate age from date of birth
 CREATE OR REPLACE FUNCTION calculate_age(birth_date DATE)
 RETURNS INTEGER AS $$
 BEGIN
@@ -189,7 +141,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
--- Function to check if users are friends
 CREATE OR REPLACE FUNCTION are_friends(user1_id UUID, user2_id UUID)
 RETURNS BOOLEAN AS $$
 BEGIN
@@ -204,7 +155,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE;
 
--- Function to get mutual friends count
 CREATE OR REPLACE FUNCTION get_mutual_friends_count(user1_id UUID, user2_id UUID)
 RETURNS INTEGER AS $$
 BEGIN
@@ -217,19 +167,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE;
 
--- ============================================================================
--- SAMPLE DATA (For testing - remove in production)
--- ============================================================================
-
--- Insert sample users (password is 'password123' hashed with bcrypt)
--- INSERT INTO users (email, username, password_hash, first_name, last_name, date_of_birth, bio) VALUES
--- ('john.doe@example.com', 'johndoe', '$2b$10$rKvVMhXQJZhZhZhZhZhZhuGxGxGxGxGxGxGxGxGxGxGxGxGxGxGxG', 'John', 'Doe', '1990-05-15', 'Software developer'),
--- ('jane.smith@example.com', 'janesmith', '$2b$10$rKvVMhXQJZhZhZhZhZhZhuGxGxGxGxGxGxGxGxGxGxGxGxGxGxGxG', 'Jane', 'Smith', '1992-08-22', 'Designer'),
--- ('bob.wilson@example.com', 'bobwilson', '$2b$10$rKvVMhXQJZhZhZhZhZhZhuGxGxGxGxGxGxGxGxGxGxGxGxGxGxGxG', 'Bob', 'Wilson', '1988-03-10', 'Product manager');
-
--- ============================================================================
--- COMMENTS
--- ============================================================================
 
 COMMENT ON TABLE users IS 'Main users table storing user account information';
 COMMENT ON TABLE friend_requests IS 'Friend requests and friendships between users';
