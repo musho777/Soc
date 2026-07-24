@@ -14,6 +14,8 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { User } from '../users/entities/user.entity';
 import { createHash } from 'crypto';
 
+const REFRESH_TOKEN_HASH_ALGORITHM = 'sha256';
+
 export interface JwtPayload {
   sub: string;
   email: string;
@@ -146,12 +148,14 @@ export class AuthService {
       secret: this.refreshSecret,
       expiresIn: this.refreshExpiration,
     });
-    const tokenHash = createHash('sha256').update(refreshToken).digest('hex');
+    const tokenHash = createHash(REFRESH_TOKEN_HASH_ALGORITHM)
+      .update(refreshToken)
+      .digest('hex');
 
     const expiresAt = this.calculateExpirationDate(this.refreshExpiration);
 
-    await this.usersRepository.saveRefreshToken(user.id, refreshToken, expiresAt);
-    return tokenHash;
+    await this.usersRepository.saveRefreshToken(user.id, tokenHash, expiresAt);
+    return refreshToken;
   }
 
   async refresh(refreshTokenDto: RefreshTokenDto): Promise<AuthResponse> {

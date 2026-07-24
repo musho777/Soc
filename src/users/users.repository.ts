@@ -1,8 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { createHash } from 'crypto';
 import { DatabaseService } from '../database/database.service';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { SearchUsersDto } from './dto/search-users.dto';
+
+const REFRESH_TOKEN_HASH_ALGORITHM = 'sha256';
 
 @Injectable()
 export class UsersRepository {
@@ -168,6 +171,10 @@ export class UsersRepository {
     token: string,
     expiresAt: Date,
   ): Promise<string> {
+    const tokenHash = createHash(REFRESH_TOKEN_HASH_ALGORITHM)
+      .update(token)
+      .digest('hex');
+
     const query = `
       INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
       VALUES ($1, $2, $3)
@@ -176,7 +183,7 @@ export class UsersRepository {
 
     const result = await this.db.query<{ id: string }>(query, [
       userId,
-      token,
+      tokenHash,
       expiresAt,
     ]);
 
@@ -189,6 +196,10 @@ export class UsersRepository {
     expires_at: Date;
     revoked_at: Date | null;
   } | null> {
+    const tokenHash = createHash(REFRESH_TOKEN_HASH_ALGORITHM)
+      .update(token)
+      .digest('hex');
+
     const query = `
       SELECT id, user_id, expires_at, revoked_at
       FROM refresh_tokens
@@ -200,19 +211,23 @@ export class UsersRepository {
       user_id: string;
       expires_at: Date;
       revoked_at: Date | null;
-    }>(query, [token]);
+    }>(query, [tokenHash]);
 
     return result.rows[0] || null;
   }
 
   async revokeRefreshToken(token: string): Promise<void> {
+    const tokenHash = createHash(REFRESH_TOKEN_HASH_ALGORITHM)
+      .update(token)
+      .digest('hex');
+
     const query = `
       UPDATE refresh_tokens
       SET revoked_at = CURRENT_TIMESTAMP
       WHERE token_hash = $1 AND revoked_at IS NULL
     `;
 
-    await this.db.query(query, [token]);
+    await this.db.query(query, [tokenHash]);
   }
 
   async revokeAllUserRefreshTokens(userId: string): Promise<void> {
