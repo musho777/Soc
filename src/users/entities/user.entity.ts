@@ -9,13 +9,13 @@ export class User {
   id!: string;
 
   @ApiProperty({
-    example: 'john.doe@example.com',
+    example: 'test@gmail.com',
     description: 'User email address',
   })
   email!: string;
 
   @ApiProperty({
-    example: 'johndoe',
+    example: 'username',
     description: 'Unique username',
   })
   username!: string;
@@ -24,26 +24,26 @@ export class User {
   password_hash?: string;
 
   @ApiProperty({
-    example: 'John',
+    example: 'first name',
     description: 'User first name',
   })
   first_name!: string;
 
   @ApiProperty({
-    example: 'Doe',
+    example: 'last name',
     description: 'User last name',
   })
   last_name!: string;
 
   @ApiProperty({
-    example: '1990-05-15',
+    example: '2001-03-09',
     description: 'User date of birth',
   })
   date_of_birth!: string | Date;
 
   @ApiPropertyOptional({
     example: 33,
-    description: 'User age (calculated from date of birth)',
+    description: 'User age',
   })
   age?: number;
 
@@ -61,19 +61,16 @@ export class User {
 
   @ApiProperty({
     example: '2024-01-15T10:30:00Z',
-    description: 'Account creation timestamp',
   })
   created_at!: Date;
 
   @ApiProperty({
     example: '2024-01-20T14:45:00Z',
-    description: 'Last account update timestamp',
   })
   updated_at!: Date;
 
   @ApiPropertyOptional({
     example: '2024-01-22T09:15:00Z',
-    description: 'Last login timestamp',
   })
   last_login_at?: Date;
 
