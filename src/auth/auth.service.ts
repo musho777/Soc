@@ -54,7 +54,7 @@ export class AuthService {
   }
 
   async register(createUserDto: CreateUserDto): Promise<AuthResponse> {
-    const birthDate = new Date(createUserDto.date_of_birth);
+    const birthDate = new Date(createUserDto.dateOfBirth);
     const today = new Date();
 
     if (birthDate > today) {
