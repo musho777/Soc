@@ -1,12 +1,5 @@
 import { Transform } from 'class-transformer';
-import {
-  IsDateString,
-  IsEmail,
-  IsString,
-  Matches,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsDateString, IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
@@ -29,9 +22,6 @@ export class CreateUserDto {
     message: 'Username must be at least 3 characters long',
   })
   @MaxLength(50)
-  @Matches(/^[a-zA-Z0-9_]+$/, {
-    message: 'Username can only contain letters, numbers, and underscores',
-  })
   username!: string;
 
   @ApiProperty({

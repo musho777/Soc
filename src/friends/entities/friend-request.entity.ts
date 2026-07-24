@@ -8,19 +8,16 @@ export enum FriendshipStatus {
 }
 export class FriendRequest {
   @ApiProperty({
-    example: '550e8400-e29b-41d4-a716-446655440000',
     description: 'Friend request unique identifier',
   })
   id!: string;
 
   @ApiProperty({
-    example: '550e8400-e29b-41d4-a716-446655440001',
     description: 'User ID who sent the request',
   })
   sender_id!: string;
 
   @ApiProperty({
-    example: '550e8400-e29b-41d4-a716-446655440002',
     description: 'User ID who received the request',
   })
   receiver_id!: string;

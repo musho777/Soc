@@ -21,7 +21,7 @@ describe('AuthService', () => {
     username: 'testuser123',
     first_name: 'name',
     last_name: 'lastname',
-    date_of_birth: '1995-05-15',
+    date_of_birth: '2001-03-09',
     password_hash: '$2b$10$hashedpassword',
     created_at: new Date('2024-01-15T10:00:00Z'),
     updated_at: new Date('2024-01-15T10:00:00Z'),
