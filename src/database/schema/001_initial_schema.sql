@@ -1,9 +1,8 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "citext";
 
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    email CITEXT UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
     username VARCHAR(50) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     first_name VARCHAR(100) NOT NULL,
@@ -12,19 +11,12 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT email_format CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
     CONSTRAINT username_format CHECK (username ~* '^[a-zA-Z0-9_]{3,50}$'),
     CONSTRAINT valid_birth_date CHECK (date_of_birth < CURRENT_DATE AND date_of_birth > '1900-01-01')
 );
 
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_username ON users(username);
-CREATE INDEX idx_users_first_name ON users(first_name);
-CREATE INDEX idx_users_last_name ON users(last_name);
-CREATE INDEX idx_users_date_of_birth ON users(date_of_birth);
-CREATE INDEX idx_users_created_at ON users(created_at DESC);
-
-CREATE INDEX idx_users_search ON users(first_name, last_name, date_of_birth);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(LOWER(email));
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 
 CREATE TYPE friendship_status AS ENUM ('pending', 'accepted', 'declined', 'blocked');
 
@@ -44,12 +36,8 @@ CREATE TABLE IF NOT EXISTS friend_requests (
     CONSTRAINT unique_friendship UNIQUE (sender_id, receiver_id)
 );
 
-CREATE INDEX idx_friend_requests_sender ON friend_requests(sender_id, status);
-CREATE INDEX idx_friend_requests_receiver ON friend_requests(receiver_id, status);
-CREATE INDEX idx_friend_requests_status ON friend_requests(status);
-CREATE INDEX idx_friend_requests_created_at ON friend_requests(created_at DESC);
-
-CREATE INDEX idx_friend_requests_bidirectional ON friend_requests(sender_id, receiver_id, status);
+CREATE INDEX IF NOT EXISTS idx_friend_requests_sender ON friend_requests(sender_id, status);
+CREATE INDEX IF NOT EXISTS idx_friend_requests_receiver ON friend_requests(receiver_id, status);
 CREATE OR REPLACE VIEW friendships AS
 SELECT
     fr.id,
@@ -78,9 +66,8 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_refresh_tokens_user ON refresh_tokens(user_id);
-CREATE INDEX idx_refresh_tokens_expires ON refresh_tokens(expires_at);
-CREATE INDEX idx_refresh_tokens_token_hash ON refresh_tokens(token_hash) WHERE revoked_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id);
+CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token_hash ON refresh_tokens(token_hash);
 
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
@@ -126,18 +113,6 @@ BEGIN
             (sender_id = user1_id AND receiver_id = user2_id)
             OR (sender_id = user2_id AND receiver_id = user1_id)
         )
-    );
-END;
-$$ LANGUAGE plpgsql STABLE;
-
-CREATE OR REPLACE FUNCTION get_mutual_friends_count(user1_id UUID, user2_id UUID)
-RETURNS INTEGER AS $$
-BEGIN
-    RETURN (
-        SELECT COUNT(DISTINCT f1.friend_id)
-        FROM friendships f1
-        INNER JOIN friendships f2 ON f1.friend_id = f2.friend_id
-        WHERE f1.user_id = user1_id AND f2.user_id = user2_id
     );
 END;
 $$ LANGUAGE plpgsql STABLE;

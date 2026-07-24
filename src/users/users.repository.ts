@@ -53,7 +53,7 @@ export class UsersRepository {
         id, email, username, password_hash, first_name, last_name, date_of_birth,
         created_at, updated_at
       FROM users
-      WHERE email = $1
+      WHERE LOWER(email) = LOWER($1)
     `;
 
     const result = await this.db.query<User>(query, [email]);
@@ -74,7 +74,7 @@ export class UsersRepository {
   }
 
   async emailExists(email: string): Promise<boolean> {
-    const query = 'SELECT 1 FROM users WHERE email = $1';
+    const query = 'SELECT 1 FROM users WHERE LOWER(email) = LOWER($1)';
     const result = await this.db.query(query, [email]);
     return (result.rowCount ?? 0) > 0;
   }

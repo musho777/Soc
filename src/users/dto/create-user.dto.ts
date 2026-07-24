@@ -14,6 +14,7 @@ export class CreateUserDto {
     example: 'test@gmail.com',
     description: 'User email address',
   })
+  @Transform(({ value }) => value?.trim())
   @IsEmail()
   email!: string;
 
