@@ -160,18 +160,3 @@ BEGIN
     );
 END;
 $$ LANGUAGE plpgsql STABLE;
-
-
-COMMENT ON TABLE users IS 'Main users table storing user account information';
-COMMENT ON TABLE friend_requests IS 'Friend requests and friendships between users';
-COMMENT ON TABLE refresh_tokens IS 'JWT refresh tokens for maintaining user sessions';
-COMMENT ON TABLE audit_logs IS 'Audit trail of important system actions';
-
-COMMENT ON COLUMN users.email IS 'User email address (case-insensitive, unique)';
-COMMENT ON COLUMN users.username IS 'Unique username for the user';
-COMMENT ON COLUMN users.password_hash IS 'Bcrypt hashed password';
-COMMENT ON COLUMN users.date_of_birth IS 'User date of birth for age calculation';
-
-COMMENT ON COLUMN friend_requests.status IS 'Current status of the friend request';
-COMMENT ON COLUMN friend_requests.sender_id IS 'User who sent the friend request';
-COMMENT ON COLUMN friend_requests.receiver_id IS 'User who received the friend request';

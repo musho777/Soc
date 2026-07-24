@@ -14,8 +14,7 @@ export class CreateUserDto {
     example: 'test@gmail.com',
     description: 'User email address',
   })
-  @Transform(({ value }) => value?.trim().toLowerCase())
-  @IsEmail({}, { message: 'Invalid email format' })
+  @IsEmail()
   email!: string;
 
   @ApiProperty({
@@ -28,9 +27,7 @@ export class CreateUserDto {
   @MinLength(3, {
     message: 'Username must be at least 3 characters long',
   })
-  @MaxLength(50, {
-    message: 'Username cannot exceed 50 characters',
-  })
+  @MaxLength(50)
   @Matches(/^[a-zA-Z0-9_]+$/, {
     message: 'Username can only contain letters, numbers, and underscores',
   })
@@ -38,19 +35,11 @@ export class CreateUserDto {
 
   @ApiProperty({
     example: 'Password123!',
-    description:
-      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+    description: 'Password must be at least 6 characters',
   })
   @IsString()
-  @MinLength(8, {
-    message: 'Password must be at least 8 characters long',
-  })
-  @MaxLength(128, {
-    message: 'Password cannot exceed 128 characters',
-  })
-  @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).*$/, {
-    message:
-      'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+  @MinLength(6, {
+    message: 'Password must be at least 6 characters long',
   })
   password!: string;
 
@@ -58,39 +47,22 @@ export class CreateUserDto {
     example: 'first name',
     description: 'User first name',
   })
-  @Transform(({ value }) => value?.trim())
   @IsString()
-  @MinLength(1, {
-    message: 'First name is required',
-  })
-  @MaxLength(100, {
-    message: 'First name cannot exceed 100 characters',
-  })
+  @MinLength(1)
   firstName!: string;
 
   @ApiProperty({
     example: 'last name',
     description: 'User last name',
   })
-  @Transform(({ value }) => value?.trim())
   @IsString()
-  @MinLength(1, {
-    message: 'Last name is required',
-  })
-  @MaxLength(100, {
-    message: 'Last name cannot exceed 100 characters',
-  })
+  @MinLength(1)
   lastName!: string;
 
   @ApiProperty({
     example: '2001-09-03',
     description: 'Date of birth in YYYY-MM-DD format',
   })
-  @IsDateString(
-    {},
-    {
-      message: 'Invalid date format. Use YYYY-MM-DD',
-    },
-  )
+  @IsDateString()
   dateOfBirth!: string;
 }

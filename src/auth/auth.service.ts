@@ -191,18 +191,15 @@ export class AuthService {
         throw new UnauthorizedException('User not found');
       }
 
-      await this.usersRepository.revokeRefreshToken(tokenHash);
-
       const accessToken = await this.generateToken(user);
-      const newRefreshToken = await this.generateRefreshToken(user);
 
-      this.logger.log(`Tokens refreshed for user: ${user.email}`);
+      this.logger.log(`Token refreshed for user: ${user.email}`);
 
       delete user.password_hash;
 
       return {
         access_token: accessToken,
-        refresh_token: newRefreshToken,
+        refresh_token: refresh_token,
         user,
       };
     } catch (error) {
