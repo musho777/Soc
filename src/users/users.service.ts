@@ -3,20 +3,12 @@ import { UsersRepository } from './users.repository';
 import { SearchUsersDto } from './dto/search-users.dto';
 import { User } from './entities/user.entity';
 
-/**
- * Users Service - Business logic for user operations
- */
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  /**
-   * Get user profile by ID
-   * @param userId User ID
-   * @returns User profile
-   */
   async getProfile(userId: string): Promise<User> {
     const user = await this.usersRepository.getProfile(userId);
 
@@ -27,11 +19,6 @@ export class UsersService {
     return user;
   }
 
-  /**
-   * Search users with advanced filters
-   * @param searchDto Search criteria
-   * @returns Paginated search results
-   */
   async search(searchDto: SearchUsersDto) {
     const { users, total } = await this.usersRepository.search(searchDto);
 
