@@ -55,8 +55,4 @@ export class User {
     example: '2024-01-20T14:45:00Z',
   })
   updated_at!: Date;
-
-  constructor(partial: Partial<User>) {
-    Object.assign(this, partial);
-  }
 }
