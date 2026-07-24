@@ -1,238 +1,203 @@
 # Social Network API
 
-A production-ready backend API for a social networking platform built with **NestJS**, **TypeScript**, and **PostgreSQL** (without ORMs).
+Backend API for a social networking platform. Built with NestJS, TypeScript, and PostgreSQL.
 
-## 📋 Table of Contents
+## What is this?
 
-- [Features](#features)
-- [Architecture](#architecture)
-- [Tech Stack](#tech-stack)
-- [Database Design](#database-design)
-- [Getting Started](#getting-started)
-- [API Documentation](#api-documentation)
-- [Environment Variables](#environment-variables)
-- [Docker Deployment](#docker-deployment)
-- [API Endpoints](#api-endpoints)
-- [Testing](#testing)
-- [Project Structure](#project-structure)
+This is a REST API that handles user authentication, and friend requests. Think of it like a simplified version of Facebook's friend system - you can register, send friend requests, accept/decline them, and search for users.
 
-## ✨ Features
+## Tech Stack
 
-### Core Functionality
+- **NestJS** - Node.js framework (similar to Express but with better structure)
+- **TypeScript** - Because plain JavaScript gets messy real fast
+- **PostgreSQL** - Database
+- **JWT** - Authentication tokens
+- **Docker** - For easy deployment
 
-- **User Management**
-  - User registration with validation
-  - Secure authentication with JWT
-  - User profile management
-  - Advanced user search with multiple filters
-
-- **Friend System**
-  - Send friend requests
-  - Accept/decline friend requests
-  - View pending and sent requests
-  - List friends with pagination
-  - Check friendship status
-  - Unfriend users
-
-- **Security**
-  - JWT-based authentication
-  - Password hashing with bcrypt
-  - Request validation with class-validator
-  - Protected routes with guards
-
-- **Advanced Features**
-  - Advanced search (first name, last name, age range)
-  - Pagination for all list endpoints
-  - Database connection pooling
-  - Comprehensive error handling
-  - API documentation with Swagger
-  - Health check endpoint
-  - Docker support for deployment
-
-## 🏗 Architecture
-
-This project follows **Clean Architecture** principles with clear separation of concerns:
-
-```
-┌─────────────────────────────────────────┐
-│          Controller Layer               │
-│  (HTTP requests/responses, validation)  │
-└─────────────────────────────────────────┘
-                  ↓
-┌─────────────────────────────────────────┐
-│           Service Layer                 │
-│      (Business logic, orchestration)    │
-└─────────────────────────────────────────┘
-                  ↓
-┌─────────────────────────────────────────┐
-│         Repository Layer                │
-│   (Data access, raw SQL queries)        │
-└─────────────────────────────────────────┘
-                  ↓
-┌─────────────────────────────────────────┐
-│          Database Layer                 │
-│        (PostgreSQL with pg)             │
-└─────────────────────────────────────────┘
-```
-
-### Design Patterns
-
-- **Repository Pattern**: Centralized data access logic
-- **Dependency Injection**: NestJS built-in DI container
-- **DTO Pattern**: Request/response validation and transformation
-- **Guard Pattern**: Route protection and authorization
-- **Decorator Pattern**: Custom decorators for clean code
-
-## 🛠 Tech Stack
-
-### Core Technologies
-
-- **NestJS** (v10.x) - Progressive Node.js framework
-- **TypeScript** (v5.x) - Type-safe JavaScript
-- **PostgreSQL** (v16) - Relational database
-- **node-postgres (pg)** - PostgreSQL client (NO ORM)
-
-### Authentication & Security
-
-- **JWT** - JSON Web Tokens for authentication
-- **Passport** - Authentication middleware
-- **bcrypt** - Password hashing
-
-### Validation & Documentation
-
-- **class-validator** - DTO validation
-- **class-transformer** - Object transformation
-- **Swagger/OpenAPI** - API documentation
-
-### DevOps
-
-- **Docker** - Containerization
-- **Docker Compose** - Multi-container orchestration
-
-## 🗄 Database Design
-
-### Entity Relationship Diagram
-
-```
-┌──────────────┐         ┌──────────────────┐         ┌──────────────┐
-│    Users     │         │ Friend Requests  │         │    Users     │
-├──────────────┤         ├──────────────────┤         ├──────────────┤
-│ id (PK)      │◄───────┤ sender_id (FK)   │         │ id (PK)      │
-│ email        │         │ receiver_id (FK) ├────────►│ email        │
-│ username     │         │ status           │         │ username     │
-│ password_hash│         │ created_at       │         │ ...          │
-│ first_name   │         │ updated_at       │         └──────────────┘
-│ last_name    │         │ responded_at     │
-│ date_of_birth│         └──────────────────┘
-│ created_at   │
-│ updated_at   │
-└──────────────┘
-```
-
-### Key Features
-
-- **UUID Primary Keys** - Better for distributed systems
-- **Indexes** - Optimized queries on frequently searched columns
-- **CITEXT Email** - Case-insensitive email storage
-- **Triggers** - Auto-update timestamps
-- **Functions** - Calculate age, check friendship status
-- **Views** - Simplified friendship queries
-- **Constraints** - Data integrity enforcement
-
-### Database Functions
-
-```sql
--- Calculate age from date of birth
-calculate_age(birth_date DATE) → INTEGER
-
--- Check if two users are friends
-are_friends(user1_id UUID, user2_id UUID) → BOOLEAN
-
--- Get mutual friends count
-get_mutual_friends_count(user1_id UUID, user2_id UUID) → INTEGER
-```
-
-## 🚀 Getting Started
+## Quick Start
 
 ### Prerequisites
 
-- Node.js (v20 or higher)
-- PostgreSQL (v14 or higher)
-- npm or yarn
-- Docker (optional, for containerized deployment)
+You'll need:
 
-### Local Development Setup
+- Node.js (v20+)
+- PostgreSQL (v14+)
+- Docker (optional but recommended)
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/musho777/Soc.git
-   cd social-api
-   ```
+### Setup
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+1. Clone and install:
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
+```bash
+git clone https://github.com/musho777/Soc.git
+cd social-api
+npm install
+```
 
-4. **Set up PostgreSQL database**
-   ```bash
-   # Create database
-   createdb social_network
+2. Copy the environment file:
 
-   # Run schema migration
-   psql -d social_network -f src/database/schema/001_initial_schema.sql
-   ```
+```bash
+cp .env.example .env
+```
 
-5. **Start the development server**
-   ```bash
-   npm run start:dev
-   ```
+Edit `.env` and update your database credentials.
 
-6. **Access the application**
-   - API: http://localhost:3000/api
-   - Swagger Docs: http://localhost:3000/api/docs
+3. Setup the database:
 
-## 📚 API Documentation
+```bash
+# Create database
+createdb social_network
 
-### Swagger UI
+# Run the schema
+psql -d social_network -f src/database/schema/001_initial_schema.sql
+```
 
-Interactive API documentation is available at `/api/docs` when the server is running.
+4. Start the server:
 
-Features:
-- Try out endpoints directly from the browser
-- View request/response schemas
-- See authentication requirements
-- Test with your JWT token
+```bash
+npm run start:dev
+```
 
-### Authentication Flow
+The API should be running on `http://localhost:3000/api`
 
-1. **Register** a new user:
-   ```
-   POST /api/auth/register
-   ```
+Check out the Swagger docs at `http://localhost:3000/api/docs` to see all available endpoints.
 
-2. **Login** to get JWT token:
-   ```
-   POST /api/auth/login
-   ```
+## Docker Setup (easier way)
 
-3. **Use token** for protected endpoints:
-   ```
-   Authorization: Bearer <your-jwt-token>
-   ```
+If you have Docker installed, just run:
 
-## 🔐 Environment Variables
+```bash
+docker-compose up -d
+```
 
-Create a `.env` file in the root directory:
+This will start:
+
+- The API on port 3000
+- PostgreSQL on port 5432
+- pgAdmin on port 5050 (useful for viewing the database)
+
+To stop everything:
+
+```bash
+docker-compose down
+```
+
+## How to Use
+
+### 1. Register a user
+
+```bash
+curl -X POST http://localhost:3000/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "username": "testuser",
+    "password": "Password123",
+    "firstName": "Test",
+    "lastName": "User",
+    "dateOfBirth": "1995-01-01"
+  }'
+```
+
+You'll get back an access token and user info.
+
+### 2. Login
+
+```bash
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "password": "Password123"
+  }'
+```
+
+### 3. Use the token for protected endpoints
+
+For any authenticated endpoint, add the token to the Authorization header:
+
+```bash
+Authorization: Bearer YOUR_TOKEN_HERE
+```
+
+## Main Features
+
+### User Management
+
+- Register with email/password
+- Login/logout with JWT tokens
+- Search users by name or age range
+- Get user profiles
+
+### Friend System
+
+- Send friend requests
+- Accept or decline requests
+- View pending requests (received)
+- View sent requests
+- List all your friends (with pagination)
+- Remove friends
+- Check friendship status between users
+
+The friend request system is bidirectional - meaning you can't send multiple requests to the same person, and you can't be friends with yourself (yeah, I had to add validation for that).
+
+## API Endpoints
+
+### Auth
+
+- `POST /api/auth/register` - Create new account
+- `POST /api/auth/login` - Get JWT token
+- `POST /api/auth/refresh` - Refresh access token
+- `POST /api/auth/logout` - Invalidate refresh token
+
+### Users
+
+- `GET /api/users/me` - Your profile
+- `GET /api/users/:id` - Get user by ID
+- `GET /api/users/search` - Search users (supports first_name, last_name, age_min, age_max)
+
+### Friends
+
+- `POST /api/friends/requests` - Send friend request
+- `GET /api/friends/requests/pending` - Requests you received
+- `GET /api/friends/requests/sent` - Requests you sent
+- `PATCH /api/friends/requests/:id/accept` - Accept request
+- `PATCH /api/friends/requests/:id/decline` - Decline request
+- `DELETE /api/friends/requests/:id` - Cancel your sent request
+- `GET /api/friends` - Your friends list
+- `DELETE /api/friends/:friendId` - Unfriend someone
+- `GET /api/friends/status/:userId` - Check friendship status
+
+## Database Structure
+
+Two main tables:
+
+**users**
+
+- id (UUID, primary key)
+- email (unique, case-insensitive)
+- username (unique)
+- password_hash (bcrypt)
+- first_name, last_name
+- date_of_birth
+- created_at, updated_at
+
+**friend_requests**
+
+- id (UUID, primary key)
+- sender_id (references users)
+- receiver_id (references users)
+- status (PENDING, ACCEPTED, DECLINED, BLOCKED)
+- created_at, updated_at, responded_at
+
+I also added some PostgreSQL functions like `calculate_age()` and `are_friends()` to make queries cleaner.
+
+## Environment Variables
+
+Here's what you need in your `.env` file:
 
 ```env
-# Application
+# App
 NODE_ENV=development
 PORT=3000
 API_PREFIX=api
@@ -246,285 +211,38 @@ DB_PASSWORD=postgres
 DB_POOL_MIN=2
 DB_POOL_MAX=10
 
-# JWT Authentication
-JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+# JWT
+JWT_SECRET=change-this-to-something-random-and-secure
 JWT_EXPIRATION=7d
+JWT_REFRESH_SECRET=another-secret-for-refresh-tokens
+JWT_REFRESH_EXPIRATION=30
 
 # Security
 BCRYPT_ROUNDS=10
 ```
 
-## 🐳 Docker Deployment
+**Important:** Change `JWT_SECRET` and `JWT_REFRESH_SECRET` to something secure in production. D
 
-### Using Docker Compose (Recommended)
-
-Start all services (API + PostgreSQL + pgAdmin):
+## Testing
 
 ```bash
-# Start services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f api
-
-# Stop services
-docker-compose down
-
-# Stop and remove volumes
-docker-compose down -v
-```
-
-### Services
-
-- **API**: http://localhost:3000
-- **PostgreSQL**: localhost:5432
-- **pgAdmin**: http://localhost:5050
-  - Email: admin@admin.com
-  - Password: admin
-
-### Using Docker Only
-
-```bash
-# Build image
-docker build -t social-api .
-
-# Run container
-docker run -p 3000:3000 \
-  -e DB_HOST=host.docker.internal \
-  -e DB_PASSWORD=postgres \
-  social-api
-```
-
-## 📍 API Endpoints
-
-### Authentication
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/auth/register` | Register new user | No |
-| POST | `/api/auth/login` | Login user | No |
-
-### Users
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/api/users/me` | Get current user profile | Yes |
-| GET | `/api/users/search` | Search users | Yes |
-| GET | `/api/users/:id` | Get user by ID | Yes |
-
-### Friends
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/friends/requests` | Send friend request | Yes |
-| GET | `/api/friends/requests/pending` | Get pending requests | Yes |
-| GET | `/api/friends/requests/sent` | Get sent requests | Yes |
-| PATCH | `/api/friends/requests/:id/accept` | Accept friend request | Yes |
-| PATCH | `/api/friends/requests/:id/decline` | Decline friend request | Yes |
-| DELETE | `/api/friends/requests/:id` | Cancel friend request | Yes |
-| GET | `/api/friends` | Get friends list | Yes |
-| DELETE | `/api/friends/:friendId` | Unfriend user | Yes |
-| GET | `/api/friends/status/:userId` | Get friendship status | Yes |
-
-### Health
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| GET | `/api/health` | Health check | No |
-
-## 🧪 Testing
-
-### Run Tests
-
-```bash
-# Unit tests
 npm run test
-
-# E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:cov
 ```
 
-### Manual Testing with cURL
+Currently only have unit tests for the auth service.
 
-**Register a user:**
-```bash
-curl -X POST http://localhost:3000/api/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "john@example.com",
-    "username": "johndoe",
-    "password": "Password123!",
-    "first_name": "John",
-    "last_name": "Doe",
-    "date_of_birth": "1990-05-15"
-  }'
-```
-
-**Search users:**
-```bash
-curl -X GET "http://localhost:3000/api/users/search?first_name=John&age_min=25&age_max=40" \
-  -H "Authorization: Bearer <your-jwt-token>"
-```
-
-**Send friend request:**
-```bash
-curl -X POST http://localhost:3000/api/friends/requests \
-  -H "Authorization: Bearer <your-jwt-token>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "receiver_id": "550e8400-e29b-41d4-a716-446655440000"
-  }'
-```
-
-## 📁 Project Structure
+## Project Structure
 
 ```
-social-api/
-├── src/
-│   ├── auth/                    # Authentication module
-│   │   ├── decorators/          # Custom decorators (@CurrentUser, @Public)
-│   │   ├── guards/              # JWT auth guard
-│   │   ├── strategies/          # Passport JWT strategy
-│   │   ├── auth.controller.ts   # Auth endpoints
-│   │   ├── auth.service.ts      # Auth business logic
-│   │   └── auth.module.ts       # Auth module configuration
-│   │
-│   ├── users/                   # Users module
-│   │   ├── dto/                 # Data transfer objects
-│   │   ├── entities/            # User entity
-│   │   ├── users.controller.ts  # User endpoints
-│   │   ├── users.service.ts     # User business logic
-│   │   ├── users.repository.ts  # User data access (SQL)
-│   │   └── users.module.ts      # Users module configuration
-│   │
-│   ├── friends/                 # Friends module
-│   │   ├── dto/                 # Data transfer objects
-│   │   ├── entities/            # Friend request entity
-│   │   ├── friends.controller.ts # Friend endpoints
-│   │   ├── friends.service.ts   # Friend business logic
-│   │   ├── friends.repository.ts # Friend data access (SQL)
-│   │   └── friends.module.ts    # Friends module configuration
-│   │
-│   ├── database/                # Database configuration
-│   │   ├── schema/              # SQL schema files
-│   │   ├── database.service.ts  # Database connection service
-│   │   └── database.module.ts   # Database module
-│   │
-│   ├── health/                  # Health check module
-│   │   ├── health.controller.ts # Health check endpoint
-│   │   └── health.module.ts     # Health module
-│   │
-│   ├── common/                  # Shared resources
-│   │   └── filters/             # Exception filters
-│   │
-│   ├── app.module.ts            # Root application module
-│   └── main.ts                  # Application entry point
-│
-├── docker/                      # Docker configuration
-├── test/                        # Test files
-├── .env.example                 # Environment variables template
-├── .dockerignore                # Docker ignore file
-├── .gitignore                   # Git ignore file
-├── Dockerfile                   # Docker image definition
-├── docker-compose.yml           # Docker Compose configuration
-├── nest-cli.json                # NestJS CLI configuration
-├── package.json                 # Dependencies and scripts
-├── tsconfig.json                # TypeScript configuration
-└── README.md                    # This file
+src/
+├── auth/               # Login, register, JWT stuff
+├── users/              # User profiles, search
+├── friends/            # Friend requests, friendships
+├── database/           # DB connection, schema files
+├── app.module.ts       # Main app module
+└── main.ts             # Entry point
 ```
 
-## 🎯 Best Practices Implemented
+## Author
 
-### Code Quality
-
-- ✅ TypeScript strict mode enabled
-- ✅ ESLint configuration
-- ✅ Prettier code formatting
-- ✅ Clean code principles
-- ✅ Comprehensive comments and documentation
-
-### Security
-
-- ✅ JWT authentication
-- ✅ Password hashing with bcrypt
-- ✅ Input validation with class-validator
-- ✅ SQL injection prevention (parameterized queries)
-- ✅ CORS configuration
-- ✅ Environment variable management
-
-### Database
-
-- ✅ Connection pooling
-- ✅ Optimized indexes
-- ✅ Proper constraints
-- ✅ Transaction support
-- ✅ Database functions for complex queries
-- ✅ Raw SQL (no ORM overhead)
-
-### Performance
-
-- ✅ Pagination for large datasets
-- ✅ Database query optimization
-- ✅ Connection pooling
-- ✅ Efficient indexing strategy
-
-### DevOps
-
-- ✅ Docker support
-- ✅ Multi-stage Docker builds
-- ✅ Health check endpoints
-- ✅ Environment-based configuration
-- ✅ Production-ready setup
-
-## 🔄 CI/CD Recommendations
-
-This project is ready for CI/CD integration. Recommended pipeline:
-
-```yaml
-# Example GitHub Actions workflow
-1. Checkout code
-2. Install dependencies
-3. Run linter
-4. Run tests
-5. Build Docker image
-6. Push to registry
-7. Deploy to environment
-```
-
-## 📈 Scalability Considerations
-
-- **Horizontal Scaling**: Stateless API design allows multiple instances
-- **Database Optimization**: Indexes and connection pooling
-- **Caching**: Ready for Redis integration
-- **Load Balancing**: Multiple API instances behind a load balancer
-- **Microservices**: Modular design allows easy service extraction
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License.
-
-## 👨‍�💻 Author
-
-**musho777**
-- GitHub: [@musho777](https://github.com/musho777)
-
-## 🙏 Acknowledgments
-
-- NestJS team for the amazing framework
-- PostgreSQL community
-- All open-source contributors
-
----
-
-**Made with ❤️ using NestJS, TypeScript, and PostgreSQL**
+Built by Mush Poghosyan
