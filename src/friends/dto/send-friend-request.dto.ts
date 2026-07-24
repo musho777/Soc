@@ -7,5 +7,5 @@ export class SendFriendRequestDto {
     description: 'User ID to send friend request to',
   })
   @IsUUID()
-  receiver_id?: string;
+  receiver_id!: string;
 }
