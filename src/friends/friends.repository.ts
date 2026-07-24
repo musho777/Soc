@@ -90,8 +90,7 @@ export class FriendsRepository {
           'id', u.id,
           'username', u.username,
           'first_name', u.first_name,
-          'last_name', u.last_name,
-          'profile_picture_url', u.profile_picture_url
+          'last_name', u.last_name
         ) as sender
       FROM friend_requests fr
       INNER JOIN users u ON u.id = fr.sender_id
@@ -116,8 +115,7 @@ export class FriendsRepository {
           'id', u.id,
           'username', u.username,
           'first_name', u.first_name,
-          'last_name', u.last_name,
-          'profile_picture_url', u.profile_picture_url
+          'last_name', u.last_name
         ) as receiver
       FROM friend_requests fr
       INNER JOIN users u ON u.id = fr.receiver_id
@@ -152,8 +150,6 @@ export class FriendsRepository {
         u.username,
         u.first_name,
         u.last_name,
-        u.profile_picture_url,
-        u.bio,
         f.friends_since
       FROM friendships f
       INNER JOIN users u ON u.id = f.friend_id

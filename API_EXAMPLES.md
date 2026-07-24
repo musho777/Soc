@@ -31,8 +31,7 @@ curl -X POST http://localhost:3000/api/auth/register \
     "password": "Password123!",
     "first_name": "John",
     "last_name": "Doe",
-    "date_of_birth": "1990-05-15",
-    "bio": "Software developer passionate about technology"
+    "date_of_birth": "1990-05-15"
   }'
 ```
 
@@ -47,7 +46,6 @@ curl -X POST http://localhost:3000/api/auth/register \
     "first_name": "John",
     "last_name": "Doe",
     "date_of_birth": "1990-05-15",
-    "bio": "Software developer passionate about technology",
     "is_active": true,
     "is_verified": false,
     "created_at": "2024-01-15T10:30:00Z"
@@ -89,7 +87,6 @@ curl http://localhost:3000/api/users/me \
   "last_name": "Doe",
   "date_of_birth": "1990-05-15",
   "age": 33,
-  "bio": "Software developer passionate about technology",
   "is_active": true,
   "is_verified": false,
   "created_at": "2024-01-15T10:30:00Z",
@@ -137,7 +134,6 @@ curl "http://localhost:3000/api/users/search?first_name=John&last_name=Doe&age_m
       "last_name": "Doe",
       "date_of_birth": "1990-05-15",
       "age": 33,
-      "bio": "Software developer",
       "is_verified": false,
       "created_at": "2024-01-15T10:30:00Z"
     }
@@ -217,8 +213,7 @@ curl http://localhost:3000/api/friends/requests/pending \
         "id": "550e8400-e29b-41d4-a716-446655440000",
         "username": "johndoe",
         "first_name": "John",
-        "last_name": "Doe",
-        "profile_picture_url": null
+        "last_name": "Doe"
       }
     }
   ],
@@ -247,8 +242,7 @@ curl http://localhost:3000/api/friends/requests/sent \
         "id": "660e8400-e29b-41d4-a716-446655440001",
         "username": "janesmith",
         "first_name": "Jane",
-        "last_name": "Smith",
-        "profile_picture_url": null
+        "last_name": "Smith"
       }
     }
   ],
@@ -340,8 +334,6 @@ curl "http://localhost:3000/api/friends?page=1&limit=10" \
       "username": "janesmith",
       "first_name": "Jane",
       "last_name": "Smith",
-      "profile_picture_url": null,
-      "bio": "Designer and creative",
       "friends_since": "2024-01-15T11:05:00Z"
     }
   ],

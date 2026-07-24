@@ -47,18 +47,6 @@ export class User {
   })
   age?: number;
 
-  @ApiPropertyOptional({
-    example: 'Software developer passionate about technology',
-    description: 'User biography',
-  })
-  bio?: string;
-
-  @ApiPropertyOptional({
-    example: 'https://example.com/avatar.jpg',
-    description: 'Profile picture URL',
-  })
-  profile_picture_url?: string;
-
   @ApiProperty({
     example: true,
     description: 'Account active status',

@@ -13,12 +13,12 @@ export class UsersRepository {
   async create(createUserDto: CreateUserDto): Promise<User> {
     const query = `
       INSERT INTO users (
-        email, username, password_hash, first_name, last_name, date_of_birth, bio
+        email, username, password_hash, first_name, last_name, date_of_birth
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING
         id, email, username, first_name, last_name, date_of_birth,
-        bio, profile_picture_url, is_active, is_verified,
+        is_active, is_verified,
         created_at, updated_at, last_login_at
     `;
 
@@ -29,7 +29,6 @@ export class UsersRepository {
       createUserDto.first_name,
       createUserDto.last_name,
       createUserDto.date_of_birth,
-      createUserDto.bio || null,
     ];
 
     const result = await this.db.query<User>(query, values);
@@ -40,7 +39,7 @@ export class UsersRepository {
     const query = `
       SELECT
         id, email, username, first_name, last_name, date_of_birth,
-        bio, profile_picture_url, is_active, is_verified,
+        is_active, is_verified,
         created_at, updated_at, last_login_at
       FROM users
       WHERE id = $1 AND is_active = true
@@ -54,7 +53,7 @@ export class UsersRepository {
     const query = `
       SELECT
         id, email, username, password_hash, first_name, last_name, date_of_birth,
-        bio, profile_picture_url, is_active, is_verified,
+        is_active, is_verified,
         created_at, updated_at, last_login_at
       FROM users
       WHERE email = $1
@@ -68,7 +67,7 @@ export class UsersRepository {
     const query = `
       SELECT
         id, email, username, first_name, last_name, date_of_birth,
-        bio, profile_picture_url, is_active, is_verified,
+        is_active, is_verified,
         created_at, updated_at, last_login_at
       FROM users
       WHERE username = $1 AND is_active = true
@@ -149,7 +148,7 @@ export class UsersRepository {
       SELECT
         id, email, username, first_name, last_name, date_of_birth,
         calculate_age(date_of_birth) as age,
-        bio, profile_picture_url, is_verified, created_at
+        is_verified, created_at
       FROM users
       ${whereClause}
       ORDER BY created_at DESC
@@ -169,7 +168,7 @@ export class UsersRepository {
       SELECT
         id, email, username, first_name, last_name, date_of_birth,
         calculate_age(date_of_birth) as age,
-        bio, profile_picture_url, is_active, is_verified,
+        is_active, is_verified,
         created_at, updated_at, last_login_at
       FROM users
       WHERE id = $1 AND is_active = true

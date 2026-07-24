@@ -124,7 +124,6 @@ This project follows **Clean Architecture** principles with clear separation of 
 │ first_name   │         │ updated_at       │         └──────────────┘
 │ last_name    │         │ responded_at     │
 │ date_of_birth│         └──────────────────┘
-│ bio          │
 │ is_active    │
 │ is_verified  │
 │ created_at   │
@@ -363,8 +362,7 @@ curl -X POST http://localhost:3000/api/auth/register \
     "password": "Password123!",
     "first_name": "John",
     "last_name": "Doe",
-    "date_of_birth": "1990-05-15",
-    "bio": "Software developer"
+    "date_of_birth": "1990-05-15"
   }'
 ```
 
