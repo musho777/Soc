@@ -37,9 +37,6 @@ async function bootstrap() {
     .setDescription(``)
     .setVersion('1.0')
     .addBearerAuth()
-    .addTag('Authentication', 'User registration and login endpoints')
-    .addTag('Users', 'User profile and search endpoints')
-    .addTag('Friends', 'Friend request and friendship management')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
