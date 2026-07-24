@@ -313,7 +313,6 @@ docker run -p 3000:3000 \
 | GET | `/api/users/me` | Get current user profile | Yes |
 | GET | `/api/users/search` | Search users | Yes |
 | GET | `/api/users/:id` | Get user by ID | Yes |
-| GET | `/api/users/username/:username` | Get user by username | Yes |
 
 ### Friends
 

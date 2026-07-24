@@ -74,25 +74,4 @@ export class UsersController {
   async getById(@Param('id') id: string): Promise<User> {
     return await this.usersService.getProfile(id);
   }
-
-  @Get('username/:username')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get user by username' })
-  @ApiParam({
-    name: 'username',
-    description: 'Username',
-    example: 'johndoe',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'User found',
-    type: User,
-  })
-  @ApiResponse({
-    status: 404,
-    description: 'User not found',
-  })
-  async getByUsername(@Param('username') username: string): Promise<User> {
-    return await this.usersService.getByUsername(username);
-  }
 }

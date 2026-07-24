@@ -55,19 +55,4 @@ export class UsersService {
       },
     };
   }
-
-  /**
-   * Get user by username
-   * @param username Username
-   * @returns User
-   */
-  async getByUsername(username: string): Promise<User> {
-    const user = await this.usersRepository.findByUsername(username);
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return user;
-  }
 }

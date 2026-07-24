@@ -6,19 +6,19 @@ export class User {
     example: '550e8400-e29b-41d4-a716-446655440000',
     description: 'User unique identifier (UUID)',
   })
-  id: string;
+  id!: string;
 
   @ApiProperty({
     example: 'john.doe@example.com',
     description: 'User email address',
   })
-  email: string;
+  email!: string;
 
   @ApiProperty({
     example: 'johndoe',
     description: 'Unique username',
   })
-  username: string;
+  username!: string;
 
   @Exclude()
   password_hash?: string;
@@ -27,19 +27,19 @@ export class User {
     example: 'John',
     description: 'User first name',
   })
-  first_name: string;
+  first_name!: string;
 
   @ApiProperty({
     example: 'Doe',
     description: 'User last name',
   })
-  last_name: string;
+  last_name!: string;
 
   @ApiProperty({
     example: '1990-05-15',
     description: 'User date of birth',
   })
-  date_of_birth: string | Date;
+  date_of_birth!: string | Date;
 
   @ApiPropertyOptional({
     example: 33,
@@ -51,25 +51,25 @@ export class User {
     example: true,
     description: 'Account active status',
   })
-  is_active: boolean;
+  is_active!: boolean;
 
   @ApiProperty({
     example: false,
     description: 'Email verification status',
   })
-  is_verified: boolean;
+  is_verified!: boolean;
 
   @ApiProperty({
     example: '2024-01-15T10:30:00Z',
     description: 'Account creation timestamp',
   })
-  created_at: Date;
+  created_at!: Date;
 
   @ApiProperty({
     example: '2024-01-20T14:45:00Z',
     description: 'Last account update timestamp',
   })
-  updated_at: Date;
+  updated_at!: Date;
 
   @ApiPropertyOptional({
     example: '2024-01-22T09:15:00Z',
