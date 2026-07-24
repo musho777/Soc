@@ -1,7 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { FriendRequest } from './entities/friend-request.entity';
-
 export interface UserInfo {
   id: string;
   username: string;
@@ -39,8 +38,6 @@ export interface FriendInfo {
 
 @Injectable()
 export class FriendsRepository {
-  private readonly logger = new Logger(FriendsRepository.name);
-
   constructor(private readonly db: DatabaseService) {}
 
   async sendRequest(senderId: string, receiverId: string): Promise<FriendRequest> {
@@ -112,7 +109,7 @@ export class FriendsRepository {
     return result.rows[0] || null;
   }
 
-  async getPendingRequests(userId: string): Promise<FriendRequestWithSender[]> {
+  async getPendingRequests(userId: string): Promise<any[]> {
     const query = `
       SELECT
         fr.id,
@@ -121,12 +118,9 @@ export class FriendsRepository {
         fr.status,
         fr.created_at,
         fr.updated_at,
-        json_build_object(
-          'id', u.id,
-          'username', u.username,
-          'first_name', u.first_name,
-          'last_name', u.last_name
-        ) as sender
+        u.username as sender_username,
+        u.first_name as sender_first_name,
+        u.last_name as sender_last_name
       FROM friend_requests fr
       INNER JOIN users u ON u.id = fr.sender_id
       WHERE fr.receiver_id = $1 AND fr.status = 'pending'
@@ -146,12 +140,9 @@ export class FriendsRepository {
         fr.status,
         fr.created_at,
         fr.updated_at,
-        json_build_object(
-          'id', u.id,
-          'username', u.username,
-          'first_name', u.first_name,
-          'last_name', u.last_name
-        ) as receiver
+        u.username as receiver_username,
+        u.first_name as receiver_first_name,
+        u.last_name as receiver_last_name
       FROM friend_requests fr
       INNER JOIN users u ON u.id = fr.receiver_id
       WHERE fr.sender_id = $1 AND fr.status = 'pending'
@@ -208,11 +199,6 @@ export class FriendsRepository {
       userId2,
     ]);
     return result.rows[0].are_friends;
-  }
-  async getMutualFriendsCount(userId1: string, userId2: string): Promise<number> {
-    const query = `SELECT get_mutual_friends_count($1, $2) as count`;
-    const result = await this.db.query<{ count: number }>(query, [userId1, userId2]);
-    return result.rows[0].count;
   }
 
   async cancelRequest(requestId: string, senderId: string): Promise<boolean> {

@@ -3,7 +3,6 @@ import {
   BadRequestException,
   NotFoundException,
   ConflictException,
-  Logger,
 } from '@nestjs/common';
 import { FriendsRepository } from './friends.repository';
 import { UsersRepository } from '../users/users.repository';
@@ -11,8 +10,6 @@ import { FriendshipStatus } from './entities/friend-request.entity';
 
 @Injectable()
 export class FriendsService {
-  private readonly logger = new Logger(FriendsService.name);
-
   constructor(
     private readonly friendsRepository: FriendsRepository,
     private readonly usersRepository: UsersRepository,
@@ -39,11 +36,6 @@ export class FriendsService {
       }
 
       if (existingRelationship.status === FriendshipStatus.PENDING) {
-        if (existingRelationship.sender_id === receiverId) {
-          throw new ConflictException(
-            'This user has already sent you a friend request. Accept it instead.',
-          );
-        }
         throw new ConflictException('Friend request already sent');
       }
 
@@ -53,8 +45,6 @@ export class FriendsService {
     }
 
     const request = await this.friendsRepository.sendRequest(senderId, receiverId);
-
-    this.logger.log(`Friend request sent from ${senderId} to ${receiverId}`);
 
     return {
       message: 'Friend request sent successfully',
@@ -112,18 +102,9 @@ export class FriendsService {
       limit,
     );
 
-    const totalPages = Math.ceil(total / limit);
-
     return {
       data: friends,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-        hasNextPage: page < totalPages,
-        hasPreviousPage: page > 1,
-      },
+      total,
     };
   }
 
@@ -169,21 +150,11 @@ export class FriendsService {
     }
 
     const areFriends = relationship.status === FriendshipStatus.ACCEPTED;
-    let mutualFriendsCount = 0;
-
-    if (areFriends) {
-      mutualFriendsCount = await this.friendsRepository.getMutualFriendsCount(
-        userId,
-        otherUserId,
-      );
-    }
 
     return {
       status: relationship.status,
       areFriends,
-      mutualFriendsCount,
       requestId: relationship.id,
-      requestSender: relationship.sender_id === userId ? 'you' : 'them',
     };
   }
 }
