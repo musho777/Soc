@@ -103,7 +103,7 @@ export class UsersRepository {
     const { first_name, last_name, age_min, age_max, page = 1, limit = 20 } = searchDto;
 
     const conditions: string[] = ['is_active = true'];
-    const params: any[] = [];
+    const params: (string | number)[] = [];
     let paramCounter = 1;
 
     if (first_name) {
