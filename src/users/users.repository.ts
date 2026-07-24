@@ -18,8 +18,7 @@ export class UsersRepository {
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING
         id, email, username, first_name, last_name, date_of_birth,
-        is_active, is_verified,
-        created_at, updated_at, last_login_at
+        created_at, updated_at
     `;
 
     const values = [
@@ -39,10 +38,9 @@ export class UsersRepository {
     const query = `
       SELECT
         id, email, username, first_name, last_name, date_of_birth,
-        is_active, is_verified,
-        created_at, updated_at, last_login_at
+        created_at, updated_at
       FROM users
-      WHERE id = $1 AND is_active = true
+      WHERE id = $1
     `;
 
     const result = await this.db.query<User>(query, [id]);
@@ -53,8 +51,7 @@ export class UsersRepository {
     const query = `
       SELECT
         id, email, username, password_hash, first_name, last_name, date_of_birth,
-        is_active, is_verified,
-        created_at, updated_at, last_login_at
+        created_at, updated_at
       FROM users
       WHERE email = $1
     `;
@@ -67,10 +64,9 @@ export class UsersRepository {
     const query = `
       SELECT
         id, email, username, first_name, last_name, date_of_birth,
-        is_active, is_verified,
-        created_at, updated_at, last_login_at
+        created_at, updated_at
       FROM users
-      WHERE username = $1 AND is_active = true
+      WHERE username = $1
     `;
 
     const result = await this.db.query<User>(query, [username]);
@@ -89,20 +85,10 @@ export class UsersRepository {
     return (result.rowCount ?? 0) > 0;
   }
 
-  async updateLastLogin(userId: string): Promise<void> {
-    const query = `
-      UPDATE users
-      SET last_login_at = CURRENT_TIMESTAMP
-      WHERE id = $1
-    `;
-
-    await this.db.query(query, [userId]);
-  }
-
   async search(searchDto: SearchUsersDto): Promise<{ users: User[]; total: number }> {
     const { first_name, last_name, age_min, age_max, page = 1, limit = 20 } = searchDto;
 
-    const conditions: string[] = ['is_active = true'];
+    const conditions: string[] = [];
     const params: (string | number)[] = [];
     let paramCounter = 1;
 
@@ -148,7 +134,7 @@ export class UsersRepository {
       SELECT
         id, email, username, first_name, last_name, date_of_birth,
         calculate_age(date_of_birth) as age,
-        is_verified, created_at
+        created_at
       FROM users
       ${whereClause}
       ORDER BY created_at DESC
@@ -168,24 +154,13 @@ export class UsersRepository {
       SELECT
         id, email, username, first_name, last_name, date_of_birth,
         calculate_age(date_of_birth) as age,
-        is_active, is_verified,
-        created_at, updated_at, last_login_at
+        created_at, updated_at
       FROM users
-      WHERE id = $1 AND is_active = true
+      WHERE id = $1
     `;
 
     const result = await this.db.query<User>(query, [userId]);
     return result.rows[0] || null;
-  }
-
-  async deactivate(userId: string): Promise<void> {
-    const query = `
-      UPDATE users
-      SET is_active = false, updated_at = CURRENT_TIMESTAMP
-      WHERE id = $1
-    `;
-
-    await this.db.query(query, [userId]);
   }
 
   async saveRefreshToken(

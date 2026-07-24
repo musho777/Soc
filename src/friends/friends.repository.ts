@@ -94,7 +94,7 @@ export class FriendsRepository {
         ) as sender
       FROM friend_requests fr
       INNER JOIN users u ON u.id = fr.sender_id
-      WHERE fr.receiver_id = $1 AND fr.status = 'pending' AND u.is_active = true
+      WHERE fr.receiver_id = $1 AND fr.status = 'pending'
       ORDER BY fr.created_at DESC
     `;
 
@@ -119,7 +119,7 @@ export class FriendsRepository {
         ) as receiver
       FROM friend_requests fr
       INNER JOIN users u ON u.id = fr.receiver_id
-      WHERE fr.sender_id = $1 AND fr.status = 'pending' AND u.is_active = true
+      WHERE fr.sender_id = $1 AND fr.status = 'pending'
       ORDER BY fr.created_at DESC
     `;
 
@@ -136,7 +136,7 @@ export class FriendsRepository {
       SELECT COUNT(DISTINCT f.friend_id) as total
       FROM friendships f
       INNER JOIN users u ON u.id = f.friend_id
-      WHERE f.user_id = $1 AND u.is_active = true
+      WHERE f.user_id = $1
     `;
 
     const countResult = await this.db.query<{ total: string }>(countQuery, [userId]);
@@ -153,7 +153,7 @@ export class FriendsRepository {
         f.friends_since
       FROM friendships f
       INNER JOIN users u ON u.id = f.friend_id
-      WHERE f.user_id = $1 AND u.is_active = true
+      WHERE f.user_id = $1
       ORDER BY f.friends_since DESC
       LIMIT $2 OFFSET $3
     `;

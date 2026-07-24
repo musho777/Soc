@@ -100,10 +100,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    if (!user.is_active) {
-      throw new UnauthorizedException('Account is deactivated');
-    }
-
     const isPasswordValid = await this.verifyPassword(
       loginDto.password,
       user.password_hash!,
@@ -112,8 +108,6 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
-
-    await this.usersRepository.updateLastLogin(user.id);
 
     this.logger.log(`User logged in: ${user.email}`);
 
@@ -195,10 +189,6 @@ export class AuthService {
 
       if (!user) {
         throw new UnauthorizedException('User not found');
-      }
-
-      if (!user.is_active) {
-        throw new UnauthorizedException('Account is deactivated');
       }
 
       await this.usersRepository.revokeRefreshToken(tokenHash);

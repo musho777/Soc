@@ -4,7 +4,6 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 export class User {
   @ApiProperty({
     example: '550e8400-e29b-41d4-a716-446655440000',
-    description: 'User unique identifier (UUID)',
   })
   id!: string;
 
@@ -48,18 +47,6 @@ export class User {
   age?: number;
 
   @ApiProperty({
-    example: true,
-    description: 'Account active status',
-  })
-  is_active!: boolean;
-
-  @ApiProperty({
-    example: false,
-    description: 'Email verification status',
-  })
-  is_verified!: boolean;
-
-  @ApiProperty({
     example: '2024-01-15T10:30:00Z',
   })
   created_at!: Date;
@@ -68,11 +55,6 @@ export class User {
     example: '2024-01-20T14:45:00Z',
   })
   updated_at!: Date;
-
-  @ApiPropertyOptional({
-    example: '2024-01-22T09:15:00Z',
-  })
-  last_login_at?: Date;
 
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);

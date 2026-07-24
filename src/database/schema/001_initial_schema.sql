@@ -9,11 +9,8 @@ CREATE TABLE IF NOT EXISTS users (
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     date_of_birth DATE NOT NULL,
-    is_active BOOLEAN DEFAULT true,
-    is_verified BOOLEAN DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    last_login_at TIMESTAMP WITH TIME ZONE,
 
     CONSTRAINT email_format CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
     CONSTRAINT username_format CHECK (username ~* '^[a-zA-Z0-9_]{3,50}$'),
@@ -26,9 +23,8 @@ CREATE INDEX idx_users_first_name ON users(first_name);
 CREATE INDEX idx_users_last_name ON users(last_name);
 CREATE INDEX idx_users_date_of_birth ON users(date_of_birth);
 CREATE INDEX idx_users_created_at ON users(created_at DESC);
-CREATE INDEX idx_users_is_active ON users(is_active) WHERE is_active = true;
 
-CREATE INDEX idx_users_search ON users(first_name, last_name, date_of_birth) WHERE is_active = true;
+CREATE INDEX idx_users_search ON users(first_name, last_name, date_of_birth);
 
 CREATE TYPE friendship_status AS ENUM ('pending', 'accepted', 'declined', 'blocked');
 

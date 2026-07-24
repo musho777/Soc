@@ -124,8 +124,6 @@ This project follows **Clean Architecture** principles with clear separation of 
 │ first_name   │         │ updated_at       │         └──────────────┘
 │ last_name    │         │ responded_at     │
 │ date_of_birth│         └──────────────────┘
-│ is_active    │
-│ is_verified  │
 │ created_at   │
 │ updated_at   │
 └──────────────┘
