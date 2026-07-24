@@ -11,8 +11,8 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import { UsersRepository } from '../users/users.repository';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { LoginDto } from '../users/dto/login.dto';
-import { RefreshTokenDto } from '../users/dto/refresh-token.dto';
+import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { User } from '../users/entities/user.entity';
 
 export interface JwtPayload {
@@ -49,7 +49,7 @@ export class AuthService {
     );
     this.refreshExpiration = this.configService.get<string>(
       'JWT_REFRESH_EXPIRATION',
-      '7d',
+      '30d',
     );
   }
 

@@ -1,9 +1,10 @@
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { AuthService, AuthResponse } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { LoginDto } from '../users/dto/login.dto';
-import { RefreshTokenDto } from '../users/dto/refresh-token.dto';
+import { LoginDto } from './dto/login.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { Public } from './decorators/public.decorator';
 
 @ApiTags('Authentication')
@@ -11,6 +12,7 @@ import { Public } from './decorators/public.decorator';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
   @Public()
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register a new user' })
@@ -31,6 +33,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login to existing account' })
@@ -47,6 +50,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh access token' })
@@ -63,6 +67,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Logout and revoke refresh token' })
