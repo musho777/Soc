@@ -146,7 +146,7 @@ export class AuthService {
 
     const refreshToken = await this.jwtService.signAsync(payload, {
       secret: this.refreshSecret,
-      expiresIn: this.refreshExpiration,
+      expiresIn: `${this.refreshExpiration}d`,
     });
     const tokenHash = createHash(REFRESH_TOKEN_HASH_ALGORITHM)
       .update(refreshToken)

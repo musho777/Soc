@@ -168,13 +168,9 @@ export class UsersRepository {
 
   async saveRefreshToken(
     userId: string,
-    token: string,
+    tokenHash: string,
     expiresAt: Date,
   ): Promise<string> {
-    const tokenHash = createHash(REFRESH_TOKEN_HASH_ALGORITHM)
-      .update(token)
-      .digest('hex');
-
     const query = `
       INSERT INTO refresh_tokens (user_id, token_hash, expires_at)
       VALUES ($1, $2, $3)
