@@ -2,14 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { FriendRequest } from './entities/friend-request.entity';
 
-interface UserInfo {
+export interface UserInfo {
   id: string;
   username: string;
   first_name: string;
   last_name: string;
 }
 
-interface FriendRequestWithSender {
+export interface FriendRequestWithSender {
   id: string;
   sender_id: string;
   receiver_id: string;
@@ -19,7 +19,7 @@ interface FriendRequestWithSender {
   sender: UserInfo;
 }
 
-interface FriendRequestWithReceiver {
+export interface FriendRequestWithReceiver {
   id: string;
   sender_id: string;
   receiver_id: string;
@@ -29,7 +29,7 @@ interface FriendRequestWithReceiver {
   receiver: UserInfo;
 }
 
-interface FriendInfo {
+export interface FriendInfo {
   id: string;
   username: string;
   first_name: string;
