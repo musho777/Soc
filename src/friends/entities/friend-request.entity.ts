@@ -11,38 +11,38 @@ export class FriendRequest {
     example: '550e8400-e29b-41d4-a716-446655440000',
     description: 'Friend request unique identifier',
   })
-  id: string;
+  id!: string;
 
   @ApiProperty({
     example: '550e8400-e29b-41d4-a716-446655440001',
     description: 'User ID who sent the request',
   })
-  sender_id: string;
+  sender_id!: string;
 
   @ApiProperty({
     example: '550e8400-e29b-41d4-a716-446655440002',
     description: 'User ID who received the request',
   })
-  receiver_id: string;
+  receiver_id!: string;
 
   @ApiProperty({
     enum: FriendshipStatus,
     example: FriendshipStatus.PENDING,
     description: 'Request status',
   })
-  status: FriendshipStatus;
+  status!: FriendshipStatus;
 
   @ApiProperty({
     example: '2024-01-15T10:30:00Z',
     description: 'Request creation timestamp',
   })
-  created_at: Date;
+  created_at!: Date;
 
   @ApiProperty({
     example: '2024-01-15T10:30:00Z',
     description: 'Request last update timestamp',
   })
-  updated_at: Date;
+  updated_at!: Date;
 
   @ApiProperty({
     example: '2024-01-15T11:00:00Z',
@@ -50,8 +50,6 @@ export class FriendRequest {
     required: false,
   })
   responded_at?: Date;
-
-  // Populated fields
-  sender?: any;
-  receiver?: any;
+  sender?: unknown;
+  receiver?: unknown;
 }

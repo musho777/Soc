@@ -35,7 +35,6 @@ export async function initializeDatabase(config: {
 
   const pool = new Pool(config);
   try {
-    // Webpack bundles to dist/main.js, so __dirname is dist/
     const schemaPath = path.join(
       __dirname,
       'database',
