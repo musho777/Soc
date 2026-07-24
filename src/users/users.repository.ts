@@ -10,7 +10,7 @@ export class UsersRepository {
 
   constructor(private readonly db: DatabaseService) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto & { password_hash: string }): Promise<User> {
     const query = `
       INSERT INTO users (
         email, username, password_hash, first_name, last_name, date_of_birth
@@ -26,9 +26,9 @@ export class UsersRepository {
       createUserDto.email,
       createUserDto.username,
       createUserDto.password_hash,
-      createUserDto.first_name,
-      createUserDto.last_name,
-      createUserDto.date_of_birth,
+      createUserDto.firstName,
+      createUserDto.lastName,
+      createUserDto.dateOfBirth,
     ];
 
     const result = await this.db.query<User>(query, values);
