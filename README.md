@@ -1,28 +1,52 @@
 # Social Network API
 
-Backend API for a social networking platform. Built with NestJS, TypeScript, and PostgreSQL.
+A REST API for a social networking platform focusing on user management and friend connections. Built with NestJS, TypeScript, and PostgreSQL.
 
-## What is this?
+## Overview
 
-This is a REST API that handles user authentication, and friend requests. Think of it like a simplified version of Facebook's friend system - you can register, send friend requests, accept/decline them, and search for users.
+This project implements the core backend functionality you'd find in social networks - user authentication, profiles, and a friend request system. It's similar to how Facebook or LinkedIn handle connections between users.
 
-## Tech Stack
+## Tech Stack & Why I Chose It
 
-- **NestJS** - Node.js framework (similar to Express but with better structure)
-- **TypeScript** - Because plain JavaScript gets messy real fast
-- **PostgreSQL** - Database
-- **JWT** - Authentication tokens
-- **Docker** - For easy deployment
+- **NestJS** - Went with NestJS over vanilla Express because it has built-in dependency injection and a modular architecture that makes testing and scaling easier. The decorators and module system keep things organized as the codebase grows.
+
+- **TypeScript** - Type safety caught a lot of bugs during development, especially around the friend request state machine (pending/accepted/declined states).
+
+- **PostgreSQL** - Needed a relational database for the friend connections since they're inherently relationship-based. Postgres also has great support for complex queries and I used some custom functions to handle age calculations and friendship checks.
+
+- **JWT (Access + Refresh tokens)** - Implemented a dual-token system for better security. Access tokens expire in 7 days, refresh tokens last 30 days. This means if an access token gets compromised, the window is limited.
+
+- **Docker** - Made deployment and local development consistent across machines. No more "works on my machine" issues.
+
+## Architecture
+
+The application follows NestJS's modular architecture with three main feature modules:
+
+```
+Auth Module → Handles registration, login, token refresh
+Users Module → Profile management and user search
+Friends Module → Friend requests and connections
+```
+
+**Key Design Decisions:**
+
+1. **Stateless Authentication** - Using JWT means no session storage needed, easier to scale horizontally.
+
+2. **Database-level constraints** - Added unique constraints and foreign keys at the DB level rather than just relying on application logic. If the app has bugs, at least the data stays consistent.
+
+3. **Bidirectional friend requests** - The `friend_requests` table tracks both directions (sender/receiver), so I can query pending requests efficiently without scanning the entire table.
+
+4. **Rate limiting** - Added throttling to prevent spam on sensitive endpoints (registration, login, friend requests).
+
+5. **Soft validation** - Email uniqueness is case-insensitive at the database level using `LOWER(email)` index. Usernames are case-sensitive though.
 
 ## Quick Start
 
 ### Prerequisites
 
-You'll need:
-
 - Node.js (v20+)
 - PostgreSQL (v14+)
-- Docker (optional but recommended)
+- Docker (optional, but makes setup easier)
 
 ### Setup
 
@@ -139,7 +163,7 @@ Authorization: Bearer YOUR_TOKEN_HERE
 - Remove friends
 - Check friendship status between users
 
-The friend request system is bidirectional - meaning you can't send multiple requests to the same person, and you can't be friends with yourself (yeah, I had to add validation for that).
+The friend request system is bidirectional - you can't send multiple requests to the same person, and you can't befriend yourself (learned that the hard way after someone tried it during testing).
 
 ## API Endpoints
 
@@ -168,29 +192,38 @@ The friend request system is bidirectional - meaning you can't send multiple req
 - `DELETE /api/friends/:friendId` - Unfriend someone
 - `GET /api/friends/status/:userId` - Check friendship status
 
-## Database Structure
+## Database Schema
 
-Two main tables:
+The schema is intentionally simple with just two main tables:
 
 **users**
 
-- id (UUID, primary key)
-- email (unique, case-insensitive)
-- username (unique)
-- password_hash (bcrypt)
-- first_name, last_name
-- date_of_birth
-- created_at, updated_at
+- `id` - UUID primary key (using gen_random_uuid())
+- `email` - Unique, case-insensitive via index on LOWER(email)
+- `username` - Unique, case-sensitive
+- `password_hash` - Bcrypt hashed (10 rounds)
+- `first_name`, `last_name` - User's name
+- `date_of_birth` - For age-based search
+- `created_at`, `updated_at` - Timestamps
 
 **friend_requests**
 
-- id (UUID, primary key)
-- sender_id (references users)
-- receiver_id (references users)
-- status (PENDING, ACCEPTED, DECLINED, BLOCKED)
-- created_at, updated_at, responded_at
+- `id` - UUID primary key
+- `sender_id` - FK to users (who sent the request)
+- `receiver_id` - FK to users (who received it)
+- `status` - Enum: PENDING, ACCEPTED, DECLINED, BLOCKED
+- `created_at`, `updated_at`, `responded_at` - Tracking timestamps
 
-I also added some PostgreSQL functions like `calculate_age()` and `are_friends()` to make queries cleaner.
+**Why this structure?**
+
+I considered making a separate `friendships` table for accepted requests, but decided against it. Keeping everything in `friend_requests` with status changes makes the history trackable. If you want to see when two people became friends, it's all there.
+
+The table has indexes on `(sender_id, receiver_id)` and `(receiver_id, sender_id)` for fast lookups in both directions.
+
+**Custom Postgres Functions:**
+
+- `calculate_age(date_of_birth)` - Returns current age, used in search queries
+- `are_friends(user1_id, user2_id)` - Returns boolean, checks if an ACCEPTED request exists between two users
 
 ## Environment Variables
 
@@ -221,28 +254,78 @@ JWT_REFRESH_EXPIRATION=30
 BCRYPT_ROUNDS=10
 ```
 
-**Important:** Change `JWT_SECRET` and `JWT_REFRESH_SECRET` to something secure in production. D
+**Important:** Change `JWT_SECRET` and `JWT_REFRESH_SECRET` in production. Use a strong random string (at least 32 characters). You can generate one with:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
 
 ## Testing
 
 ```bash
+# Unit tests
 npm run test
+
+# Watch mode (useful during development)
+npm run test:watch
+
+# Coverage report
+npm run test:cov
+
+# E2E tests
+npm run test:e2e
 ```
 
-Currently only have unit tests for the auth service.
+Currently have unit tests for the auth service. Still need to add tests for the friends module - that's next on my list.
 
 ## Project Structure
 
 ```
 src/
-├── auth/               # Login, register, JWT stuff
-├── users/              # User profiles, search
-├── friends/            # Friend requests, friendships
-├── database/           # DB connection, schema files
-├── app.module.ts       # Main app module
-└── main.ts             # Entry point
+├── auth/               # Authentication (register, login, JWT strategy)
+├── users/              # User management (profiles, search)
+├── friends/            # Friend system (requests, connections)
+├── database/           # Database config and schema migrations
+├── app.module.ts       # Root module
+└── main.ts             # Bootstrap file
 ```
+
+Each module follows NestJS conventions: controllers for routes, services for business logic, DTOs for validation.
+
+## Challenges & Learnings
+
+**Problem 1: Preventing duplicate friend requests**
+
+Initially, users could spam friend requests because I only checked one direction. Fixed it by adding a unique constraint on `(sender_id, receiver_id)` and checking both directions before allowing a new request.
+
+**Problem 2: Cascading deletes**
+
+When a user is deleted, what happens to their friend requests? I added `ON DELETE CASCADE` to the foreign keys, so everything gets cleaned up automatically. The alternative was soft deletes, but that complicates queries.
+
+**Problem 3: Age calculation performance**
+
+Originally calculated age in the application layer, but doing age-based search meant scanning every user. Moved the calculation to a Postgres function and it's much faster now since the DB can filter before returning results.
+
+## What I'd Improve
+
+If I had more time / this was production:
+
+1. **Add caching** - Redis for frequently accessed data (user profiles, friend lists)
+2. **Pagination improvements** - Current pagination is offset-based. Cursor-based would be better for large datasets
+3. **Email verification** - Right now you can register with any email. Should add verification tokens
+4. **More comprehensive testing** - E2E tests for the entire friend request flow
+5. **Monitoring** - Add logging aggregation (maybe Winston + ELK stack) and metrics
+6. **WebSocket support** - For real-time friend request notifications
+
+## Security Considerations
+
+- **Rate limiting** - Configured via `@nestjs/throttler` to prevent abuse
+- **Password hashing** - Using bcrypt with 10 rounds (adjustable via env)
+- **SQL injection** - Protected via parameterized queries (pg library handles this)
+- **JWT security** - Tokens are stateless but include expiry. Refresh tokens allow revocation if needed
+- **CORS** - Configured in main.ts, currently allows all origins (should restrict in production)
+- **Input validation** - All DTOs use class-validator decorators to sanitize input
 
 ## Author
 
-Built by Mush Poghosyan
+Built by **Mush Poghosyan**
