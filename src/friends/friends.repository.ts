@@ -2,6 +2,41 @@ import { Injectable, Logger } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { FriendRequest } from './entities/friend-request.entity';
 
+interface UserInfo {
+  id: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+}
+
+interface FriendRequestWithSender {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  status: string;
+  created_at: Date;
+  updated_at: Date;
+  sender: UserInfo;
+}
+
+interface FriendRequestWithReceiver {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  status: string;
+  created_at: Date;
+  updated_at: Date;
+  receiver: UserInfo;
+}
+
+interface FriendInfo {
+  id: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  friends_since: Date;
+}
+
 @Injectable()
 export class FriendsRepository {
   private readonly logger = new Logger(FriendsRepository.name);
@@ -77,7 +112,7 @@ export class FriendsRepository {
     return result.rows[0] || null;
   }
 
-  async getPendingRequests(userId: string): Promise<any[]> {
+  async getPendingRequests(userId: string): Promise<FriendRequestWithSender[]> {
     const query = `
       SELECT
         fr.id,
@@ -102,7 +137,7 @@ export class FriendsRepository {
     return result.rows;
   }
 
-  async getSentRequests(userId: string): Promise<any[]> {
+  async getSentRequests(userId: string): Promise<FriendRequestWithReceiver[]> {
     const query = `
       SELECT
         fr.id,
@@ -131,7 +166,7 @@ export class FriendsRepository {
     userId: string,
     page: number = 1,
     limit: number = 20,
-  ): Promise<{ friends: any[]; total: number }> {
+  ): Promise<{ friends: FriendInfo[]; total: number }> {
     const countQuery = `
       SELECT COUNT(DISTINCT f.friend_id) as total
       FROM friendships f
