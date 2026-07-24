@@ -69,8 +69,6 @@ export class FriendsService {
       throw new NotFoundException('Friend request not found or already responded to');
     }
 
-    this.logger.log(`Friend request ${requestId} accepted by ${userId}`);
-
     return {
       message: 'Friend request accepted',
       request,
@@ -83,8 +81,6 @@ export class FriendsService {
     if (!request) {
       throw new NotFoundException('Friend request not found or already responded to');
     }
-
-    this.logger.log(`Friend request ${requestId} declined by ${userId}`);
 
     return {
       message: 'Friend request declined',
@@ -138,8 +134,6 @@ export class FriendsService {
       throw new NotFoundException('Friend request not found or cannot be cancelled');
     }
 
-    this.logger.log(`Friend request ${requestId} cancelled by ${userId}`);
-
     return {
       message: 'Friend request cancelled successfully',
     };
@@ -155,8 +149,6 @@ export class FriendsService {
     if (!success) {
       throw new NotFoundException('Friendship not found');
     }
-
-    this.logger.log(`User ${userId} unfriended ${friendId}`);
 
     return {
       message: 'Friend removed successfully',
