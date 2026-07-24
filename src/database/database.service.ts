@@ -6,7 +6,7 @@ import { initializeDatabase } from './database-initializer';
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(DatabaseService.name);
-  private pool: Pool;
+  private pool!: Pool;
 
   constructor(private configService: ConfigService) {}
 
@@ -38,9 +38,9 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     await this.pool.end();
   }
 
-  async query<T extends QueryResultRow = any>(
+  async query<T extends QueryResultRow>(
     query: string,
-    params?: any[],
+    params?: unknown[],
   ): Promise<QueryResult<T>> {
     try {
       const result = await this.pool.query<T>(query, params);
