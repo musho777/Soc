@@ -11,7 +11,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @ApiProperty({
-    example: 'john.doe@example.com',
+    example: 'test@gmail.com',
     description: 'User email address',
   })
   @Transform(({ value }) => value?.trim().toLowerCase())
@@ -19,7 +19,7 @@ export class CreateUserDto {
   email!: string;
 
   @ApiProperty({
-    example: 'johndoe',
+    example: 'username',
     description:
       'Unique username (3-50 characters, letters, numbers, and underscores only)',
   })
@@ -55,7 +55,7 @@ export class CreateUserDto {
   password!: string;
 
   @ApiProperty({
-    example: 'John',
+    example: 'first name',
     description: 'User first name',
   })
   @Transform(({ value }) => value?.trim())
@@ -69,7 +69,7 @@ export class CreateUserDto {
   firstName!: string;
 
   @ApiProperty({
-    example: 'Doe',
+    example: 'last name',
     description: 'User last name',
   })
   @Transform(({ value }) => value?.trim())
@@ -83,7 +83,7 @@ export class CreateUserDto {
   lastName!: string;
 
   @ApiProperty({
-    example: '1990-05-15',
+    example: '2001-09-03',
     description: 'Date of birth in YYYY-MM-DD format',
   })
   @IsDateString(
