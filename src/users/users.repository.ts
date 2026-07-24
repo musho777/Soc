@@ -165,7 +165,7 @@ export class UsersRepository {
 
   async saveRefreshToken(
     userId: string,
-    tokenHash: string,
+    token: string,
     expiresAt: Date,
   ): Promise<string> {
     const query = `
@@ -176,14 +176,14 @@ export class UsersRepository {
 
     const result = await this.db.query<{ id: string }>(query, [
       userId,
-      tokenHash,
+      token,
       expiresAt,
     ]);
 
     return result.rows[0].id;
   }
 
-  async findRefreshToken(tokenHash: string): Promise<{
+  async findRefreshToken(token: string): Promise<{
     id: string;
     user_id: string;
     expires_at: Date;
@@ -200,19 +200,19 @@ export class UsersRepository {
       user_id: string;
       expires_at: Date;
       revoked_at: Date | null;
-    }>(query, [tokenHash]);
+    }>(query, [token]);
 
     return result.rows[0] || null;
   }
 
-  async revokeRefreshToken(tokenHash: string): Promise<void> {
+  async revokeRefreshToken(token: string): Promise<void> {
     const query = `
       UPDATE refresh_tokens
       SET revoked_at = CURRENT_TIMESTAMP
       WHERE token_hash = $1 AND revoked_at IS NULL
     `;
 
-    await this.db.query(query, [tokenHash]);
+    await this.db.query(query, [token]);
   }
 
   async revokeAllUserRefreshTokens(userId: string): Promise<void> {

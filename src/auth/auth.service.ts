@@ -8,7 +8,6 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto';
 import { UsersRepository } from '../users/users.repository';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
@@ -49,18 +48,11 @@ export class AuthService {
     );
     this.refreshExpiration = this.configService.get<string>(
       'JWT_REFRESH_EXPIRATION',
-      '30d',
+      '30',
     );
   }
 
   async register(createUserDto: CreateUserDto): Promise<AuthResponse> {
-    const birthDate = new Date(createUserDto.dateOfBirth);
-    const today = new Date();
-
-    if (birthDate > today) {
-      throw new BadRequestException('Date of birth cannot be in the future');
-    }
-
     const emailExists = await this.usersRepository.emailExists(createUserDto.email);
     if (emailExists) {
       throw new ConflictException('Email already registered');
@@ -80,7 +72,6 @@ export class AuthService {
     };
 
     const user = await this.usersRepository.create(userToCreate);
-    this.logger.log(`New user registered: ${user.email}`);
 
     const accessToken = await this.generateToken(user);
     const refreshToken = await this.generateRefreshToken(user);
@@ -123,7 +114,7 @@ export class AuthService {
   }
 
   async validateUser(userId: string): Promise<User | null> {
-    return await this.usersRepository.findById(userId);
+    return this.usersRepository.findById(userId);
   }
 
   private async hashPassword(password: string): Promise<string> {
@@ -153,13 +144,12 @@ export class AuthService {
 
     const refreshToken = await this.jwtService.signAsync(payload, {
       secret: this.refreshSecret,
-      expiresIn: this.refreshExpiration,
+      expiresIn: this.refreshExpiration + 'd',
     });
 
-    const tokenHash = this.hashToken(refreshToken);
     const expiresAt = this.calculateExpirationDate(this.refreshExpiration);
 
-    await this.usersRepository.saveRefreshToken(user.id, tokenHash, expiresAt);
+    await this.usersRepository.saveRefreshToken(user.id, refreshToken, expiresAt);
     return refreshToken;
   }
 
@@ -170,8 +160,8 @@ export class AuthService {
       const payload = await this.jwtService.verifyAsync<JwtPayload>(refresh_token, {
         secret: this.refreshSecret,
       });
-      const tokenHash = this.hashToken(refresh_token);
-      const storedToken = await this.usersRepository.findRefreshToken(tokenHash);
+
+      const storedToken = await this.usersRepository.findRefreshToken(refresh_token);
 
       if (!storedToken) {
         throw new UnauthorizedException('Invalid refresh token');
@@ -193,8 +183,6 @@ export class AuthService {
 
       const accessToken = await this.generateToken(user);
 
-      this.logger.log(`Token refreshed for user: ${user.email}`);
-
       delete user.password_hash;
 
       return {
@@ -211,40 +199,14 @@ export class AuthService {
   }
 
   async logout(refreshToken: string): Promise<void> {
-    const tokenHash = this.hashToken(refreshToken);
-    await this.usersRepository.revokeRefreshToken(tokenHash);
+    await this.usersRepository.revokeRefreshToken(refreshToken);
     this.logger.log('User logged out');
-  }
-  private hashToken(token: string): string {
-    return crypto.createHash('sha256').update(token).digest('hex');
   }
 
   private calculateExpirationDate(expiration: string): Date {
-    const now = new Date();
-    const match = expiration.match(/^(\d+)([smhd])$/);
-
-    if (!match) {
-      throw new Error('Invalid expiration format');
-    }
-
-    const value = parseInt(match[1], 10);
-    const unit = match[2];
-
-    switch (unit) {
-      case 's':
-        now.setSeconds(now.getSeconds() + value);
-        break;
-      case 'm':
-        now.setMinutes(now.getMinutes() + value);
-        break;
-      case 'h':
-        now.setHours(now.getHours() + value);
-        break;
-      case 'd':
-        now.setDate(now.getDate() + value);
-        break;
-    }
-
-    return now;
+    const days = parseInt(expiration);
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + days);
+    return expiresAt;
   }
 }
