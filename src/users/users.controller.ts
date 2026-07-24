@@ -43,8 +43,6 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Search users',
-    description:
-      'Advanced user search with filters for first name, last name, and age range',
   })
   @ApiResponse({
     status: 200,
@@ -59,8 +57,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiParam({
     name: 'id',
-    description: 'User ID (UUID)',
-    example: '550e8400-e29b-41d4-a716-446655440000',
+    description: 'UUID',
   })
   @ApiResponse({
     status: 200,

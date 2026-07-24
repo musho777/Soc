@@ -5,7 +5,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 export class SearchUsersDto {
   @ApiPropertyOptional({
     example: 'Name',
-    description: 'Search by first name (partial match, case-insensitive)',
+    description: 'first name',
   })
   @IsOptional()
   @IsString()
@@ -13,7 +13,7 @@ export class SearchUsersDto {
 
   @ApiPropertyOptional({
     example: 'Surname',
-    description: 'Search by last name (partial match, case-insensitive)',
+    description: 'last name',
   })
   @IsOptional()
   @IsString()
