@@ -28,6 +28,18 @@ export interface FriendRequestWithReceiver {
   receiver: UserInfo;
 }
 
+export interface PendingRequestResult {
+  id: string;
+  sender_id: string;
+  receiver_id: string;
+  status: string;
+  created_at: Date;
+  updated_at: Date;
+  sender_username: string;
+  sender_first_name: string;
+  sender_last_name: string;
+}
+
 export interface FriendInfo {
   id: string;
   username: string;
@@ -109,7 +121,7 @@ export class FriendsRepository {
     return result.rows[0] || null;
   }
 
-  async getPendingRequests(userId: string): Promise<any[]> {
+  async getPendingRequests(userId: string): Promise<PendingRequestResult[]> {
     const query = `
       SELECT
         fr.id,
